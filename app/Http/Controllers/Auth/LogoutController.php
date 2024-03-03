@@ -11,7 +11,7 @@ class LogoutController extends Controller
     public function __invoke(): JsonResponse
     {
         $user = Auth::user();
-
+dd($user);
         $user->tokens()->delete();
 
         return response()->json(['success' => true]);

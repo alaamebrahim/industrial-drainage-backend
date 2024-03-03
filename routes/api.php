@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\LoggedInUserInfoController;
 use App\Http\Controllers\Users\UserPermissionsController;
@@ -11,9 +12,13 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('user-info', LoggedInUserInfoController::class);
+
+    // Clients
+    Route::resource('clients', ClientsController::class);
 
     // API
 //    Route::group(['prefix' => 'list'], function () {

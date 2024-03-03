@@ -12,14 +12,14 @@
         "ext-zip": "*",
         "alkoumi/laravel-arabic-numbers": "dev-master",
         "guzzlehttp/guzzle": "^7.2",
-        "laravel/framework": "^10.10",
-        "laravel/sanctum": "^4.0@dev",
+        "laravel/framework": "^10.46",
+        "laravel/sanctum": "^3.3",
         "laravel/tinker": "^2.8",
-        "phpoffice/phpword": "dev-master",
-        "spatie/laravel-data": "dev-main"
+        "phpoffice/phpword": "^1.2",
+        "spatie/laravel-data": "^4.2"
     },
     "require-dev": {
-        "barryvdh/laravel-ide-helper": "^2.13@dev",
+        "barryvdh/laravel-ide-helper": "^3.0",
         "fakerphp/faker": "^1.9.1",
         "laravel/pint": "^1.0",
         "laravel/sail": "^1.18",
@@ -72,6 +72,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": false
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }
