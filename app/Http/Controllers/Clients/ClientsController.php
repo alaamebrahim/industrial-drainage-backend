@@ -7,6 +7,7 @@ use App\Http\Requests\Clients\StoreClientRequest;
 use App\Http\Requests\Clients\UpdateClientRequest;
 use App\Http\Resources\Clients\ClientResource;
 use App\Models\Client;
+use App\Models\SampleResult;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
@@ -18,6 +19,17 @@ class ClientsController extends Controller
         return response()->json([
             'success' => true,
             'data' => ClientResource::collection($data)->resource,
+        ]);
+    }
+
+    public function show($id): JsonResponse
+    {
+        $data = Client::query()
+            ->where('id', $id)
+            ->first();
+        return response()->json([
+            'success' => true,
+            'data' => $data,
         ]);
     }
 

@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\LoggedInUserInfoController;
+use App\Http\Controllers\SampleResults\SampleResultsController;
 use App\Http\Controllers\Samples\SampleDetailsController;
 use App\Http\Controllers\Samples\SamplesController;
 use App\Http\Controllers\Users\UserPermissionsController;
@@ -25,6 +26,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Samples
     Route::resource('samples', SamplesController::class);
     Route::resource('sample-details', SampleDetailsController::class);
+
+    // Sample results
+    Route::resource('sample-results', SampleResultsController::class);
 
     // API
 //    Route::group(['prefix' => 'list'], function () {
