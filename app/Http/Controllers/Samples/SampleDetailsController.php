@@ -15,6 +15,7 @@ class SampleDetailsController extends Controller
     public function index(): JsonResponse
     {
         $data = SampleDetail::query()
+            ->when(request()->filled('sample_id'), fn ($query) => $query->where('sample_id', request('sample_id')))
             ->with(['sample'])
             ->orderBy('sample_id', 'desc')
             ->orderBy('id', 'asc')
