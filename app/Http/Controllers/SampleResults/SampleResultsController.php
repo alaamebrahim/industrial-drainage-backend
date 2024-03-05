@@ -35,12 +35,13 @@ class SampleResultsController extends Controller
             ->where('id', $id)
             ->select(['id', 'client_id', 'sample_result_date'])
             ->with([
-                'resultDetails'
+                'resultDetails.sample',
+                'resultDetails.sampleDetail',
             ])
             ->first();
         return response()->json([
             'success' => true,
-            'data' => $data,
+            'data' => new SampleResultResource($data),
         ]);
     }
 

@@ -14,6 +14,7 @@ class SampleResultResource extends JsonResource
         return [
             'id' => $this->id,
             'client_key' => $this->client?->client_key,
+            'client_id' => $this->client_id,
             'client_name' => $this->client?->name,
             'client_address' => $this->client?->address,
             'sample_result_date' => $this->sample_result_date,

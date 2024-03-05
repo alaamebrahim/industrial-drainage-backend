@@ -14,9 +14,12 @@ class SampleResultDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'sample_result_id' => $this->sample_result_id,
+            'sample_id' => $this->sample_id,
             'sample_name' => $this->sample?->name,
             'sample_detail_name' => $this->sampleDetail?->description,
+            'sample_detail_id' => $this->sample_detail_id,
             'value' => $this->value,
+            'duration' => $this->sampleDetail?->duration,
         ];
     }
 }

@@ -7,6 +7,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $client_id
+ * @property string $sample_result_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \App\Models\Client $client
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\SampleResultDetail> $resultDetails
+ * @property-read int|null $result_details_count
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult query()
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult whereClientId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult whereSampleResultDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|SampleResult whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class SampleResult extends Model
 {
     use HasFactory;
