@@ -54,10 +54,10 @@ class ClaimsController extends Controller
         try {
             DB::beginTransaction();
 
-//            $claim = Claim::query()->create($request->validated());
-
-            ClaimDataProcess::calculate(Claim::query()->first());
+            $claim = Claim::query()->create($request->validated());
+//            ClaimDataProcess::calculate(Claim::query()->first());
             DB::commit();
+            dd('');
         } catch (\Throwable $exception) {
             DB::rollBack();
             errorLog($exception);

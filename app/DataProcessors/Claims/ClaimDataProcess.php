@@ -52,29 +52,58 @@ class ClaimDataProcess
 
         $total_duration = Carbon::parse($startDate)->diffInDays($endDate);
 
-        $total_duration -= $start_difference;
-
-        $repetitions = ceil($total_duration / $time_limit);
+        $repetitions = floor(($total_duration + $start_difference) / $time_limit);
 
         $result = array_fill(0, $repetitions, $time_limit);
 
-        $remaining_duration = $total_duration % $time_limit;
+        $remaining_duration = ($total_duration + $start_difference) - array_sum($result);
+
+        if ($remaining_duration < 0) {
+            $result[$repetitions - 1] = $result[$repetitions - 1] - $remaining_duration;
+        }
 
         if ($remaining_duration > 0) {
-            $result[$repetitions - 1] = $remaining_duration;
+            $result[$repetitions] = $remaining_duration;
         }
 
         if (count($result) > 3) {
             $sum_values = array_sum(array_slice($result, 2));
 
-            return [
+            $result = [
                 $result[0],
                 $result[1],
                 $sum_values,
             ];
         }
 
-        return $result;
+        if ($start_difference == 0 ) {
+            return $result;
+        }
+
+        return collect($result)
+            ->map(function ($resultItem, $index) use ($result, &$start_difference){
+                if ($start_difference <= 0) {
+                    return $resultItem;
+                }
+
+                if ($start_difference >= $resultItem) {
+                    $start_difference -= $resultItem;
+                    return  0;
+                }
+
+
+                $finalResultItem =  $resultItem - $start_difference;
+
+                $start_difference -= $resultItem;
+
+
+                if ($start_difference < 0) {
+                    $start_difference = 0;
+                }
+
+                return $finalResultItem;
+
+            })->toArray();
     }
 
     public static function calculateValue(ResultDetail $resultDetail, Claim $claim, string $resultDate, string $startDate, string $endDate): int|float
