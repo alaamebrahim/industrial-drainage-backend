@@ -12,7 +12,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('sample_id')->references('id')->on('samples');
             $table->string('description');
-            $table->integer('price');
+            $table->decimal('price', 3, 2);
             $table->string('duration')->nullable();
             $table->timestamps();
         });
