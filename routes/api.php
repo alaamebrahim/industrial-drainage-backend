@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Claims\ClaimsController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\LoggedInUserInfoController;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
+Route::resource('claim-test', ClaimsController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -29,6 +31,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Sample results
     Route::resource('results', ResultsController::class);
+
+    // Claims
+    Route::resource('claims', ClaimsController::class);
 
     // API
 //    Route::group(['prefix' => 'list'], function () {

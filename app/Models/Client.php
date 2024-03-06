@@ -30,6 +30,7 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereLetterHeading($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Client whereConsumption($value)
  * @mixin \Eloquent
  */
 class Client extends Model

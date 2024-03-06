@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property int $client_id
@@ -26,6 +26,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Result whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Result whereSampleResultDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Result whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Result whereResultDate($value)
  * @mixin \Eloquent
  */
 class Result extends Model

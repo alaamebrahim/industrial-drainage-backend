@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- *
+ * 
  *
  * @property int $id
  * @property int $result_id
@@ -29,6 +29,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|ResultDetail whereSampleResultId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ResultDetail whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|ResultDetail whereValue($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|ResultDetail whereResultId($value)
  * @mixin \Eloquent
  */
 class ResultDetail extends Model
