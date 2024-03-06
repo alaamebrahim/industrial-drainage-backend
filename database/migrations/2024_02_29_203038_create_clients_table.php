@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('address');
             $table->string('letter_heading');
-            $table->integer('last_consumption')->default(0  );
+            $table->integer('consumption')->default(0  );
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });

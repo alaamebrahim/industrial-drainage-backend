@@ -17,6 +17,7 @@ class ResultResource extends JsonResource
             'client_id' => $this->client_id,
             'client_name' => $this->client?->name,
             'client_address' => $this->client?->address,
+            'client_consumption' => $this->client?->consumption,
             'result_date' => $this->result_date,
             'details' => ResultDetailResource::collection($this->resultDetails)
         ];

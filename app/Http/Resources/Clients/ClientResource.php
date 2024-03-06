@@ -17,7 +17,7 @@ class ClientResource extends JsonResource
             'address' => $this->address,
             'client_key' => $this->client_key,
             'letter_heading' => $this->letter_heading,
-            'last_consumption' => $this->last_consumption,
+            'consumption' => $this->consumption,
             'is_active' => $this->is_active,
         ];
     }

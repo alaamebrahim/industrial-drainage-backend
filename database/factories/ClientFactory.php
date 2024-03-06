@@ -19,7 +19,7 @@ class ClientFactory extends Factory
             'name' => $this->faker->name,
             'address' => $this->faker->address,
             'letter_heading' => $this->faker->name,
-            'last_consumption' => 100,
+            'consumption' => 100,
             'is_active' => true,
         ];
     }

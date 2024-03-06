@@ -19,7 +19,7 @@ class StoreClientRequest extends JsonFormRequest
             'name' => ['required'],
             'address' => ['required'],
             'letter_heading' => ['required'],
-            'last_consumption' => ['nullable'],
+            'consumption' => ['nullable'],
             'is_active' => ['nullable'],
         ];
     }
