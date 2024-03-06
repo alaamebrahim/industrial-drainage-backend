@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sample_results', function (Blueprint $table) {
+        Schema::create('result_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('client_id')->references('id')->on('clients');
-            $table->date('sample_result_date');
+            $table->foreignId('result_id')->references('id')->on('results');
+            $table->foreignId('sample_id')->references('id')->on('samples');
+            $table->foreignId('sample_detail_id')->references('id')->on('sample_details');
+            $table->double('value');
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sample_results');
+        Schema::dropIfExists('result_details');
     }
 };

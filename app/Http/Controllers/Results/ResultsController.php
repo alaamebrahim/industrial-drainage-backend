@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Http\Controllers\SampleResults;
+namespace App\Http\Controllers\Results;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\SampleResults\StoreSampleResultRequest;
-use App\Http\Requests\SampleResults\UpdateSampleResultRequest;
-use App\Http\Resources\SampleResults\SampleResultResource;
-use App\Models\SampleResult;
-use App\Models\SampleResultDetail;
+use App\Http\Requests\SampleResults\StoreResultRequest;
+use App\Http\Requests\SampleResults\UpdateResultRequest;
+use App\Http\Resources\Results\ResultResource;
+use App\Models\Result;
+use App\Models\ResultDetail;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
-class SampleResultsController extends Controller
+class ResultsController extends Controller
 {
     public function index(): JsonResponse
     {
-        $data = SampleResult::query()
+        $data = Result::query()
             ->with([
                 'client',
                 'resultDetails.sample',
@@ -25,15 +25,15 @@ class SampleResultsController extends Controller
             ->paginate(25);
         return response()->json([
             'success' => true,
-            'data' => SampleResultResource::collection($data)->resource,
+            'data' => ResultResource::collection($data)->resource,
         ]);
     }
 
     public function show($id): JsonResponse
     {
-        $data = SampleResult::query()
+        $data = Result::query()
             ->where('id', $id)
-            ->select(['id', 'client_id', 'sample_result_date'])
+            ->select(['id', 'client_id', 'result_date'])
             ->with([
                 'resultDetails.sample',
                 'resultDetails.sampleDetail',
@@ -41,24 +41,24 @@ class SampleResultsController extends Controller
             ->first();
         return response()->json([
             'success' => true,
-            'data' => new SampleResultResource($data),
+            'data' => new ResultResource($data),
         ]);
     }
 
-    public function store(StoreSampleResultRequest $request): JsonResponse
+    public function store(StoreResultRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
-            $sampleResult = SampleResult::query()->create($request->only(['client_id', 'sample_result_date']));
+            $sampleResult = Result::query()->create($request->only(['client_id', 'result_date']));
 
             $items = json_decode($request->get('items'), true);
 
             collect($items)
                 ->each(function (array $item) use ($sampleResult) {
-                    SampleResultDetail::query()
+                    ResultDetail::query()
                         ->create([
-                            'sample_result_id' => $sampleResult->id,
+                            'result_id' => $sampleResult->id,
                             'sample_id' => $item['sample_id'],
                             'sample_detail_id' => $item['sample_detail_id'],
                             'value' => $item['value'],
@@ -81,22 +81,22 @@ class SampleResultsController extends Controller
         ]);
     }
 
-    public function update($id, UpdateSampleResultRequest $request): JsonResponse
+    public function update($id, UpdateResultRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
-            SampleResult::query()->where('id', $id)->update($request->only(['client_id', 'sample_result_date']));
+            Result::query()->where('id', $id)->update($request->only(['client_id', 'result_date']));
 
-            SampleResult::query()->where('id', $id)->first()?->resultDetails()->delete();
+            Result::query()->where('id', $id)->first()?->resultDetails()->delete();
 
             $items = json_decode($request->get('items'), true);
 
             collect($items)
                 ->each(function (array $item) use ($id) {
-                    SampleResultDetail::query()
+                    ResultDetail::query()
                         ->create([
-                            'sample_result_id' => $id,
+                            'result_id' => $id,
                             'sample_id' => $item['sample_id'],
                             'sample_detail_id' => $item['sample_detail_id'],
                             'value' => $item['value'],

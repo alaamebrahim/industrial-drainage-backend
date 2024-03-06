@@ -4,7 +4,7 @@ namespace App\Http\Requests\SampleResults;
 
 use App\Http\Requests\JsonFormRequest;
 
-class StoreSampleResultRequest extends JsonFormRequest
+class UpdateResultRequest extends JsonFormRequest
 {
     public function authorize(): bool
     {
@@ -15,7 +15,7 @@ class StoreSampleResultRequest extends JsonFormRequest
     {
         return [
             'client_id' => ['required'],
-            'sample_result_date' => ['required'],
+            'result_date' => ['required'],
             'items' => ['required'],
         ];
     }

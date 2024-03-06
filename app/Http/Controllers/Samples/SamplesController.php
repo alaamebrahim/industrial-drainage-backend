@@ -7,7 +7,7 @@ use App\Http\Requests\Samples\StoreSampleRequest;
 use App\Http\Requests\Samples\UpdateSampleRequest;
 use App\Http\Resources\Samples\SampleResource;
 use App\Models\Sample;
-use App\Models\SampleResult;
+use App\Models\Result;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 

@@ -7,7 +7,7 @@ use App\Http\Requests\Clients\StoreClientRequest;
 use App\Http\Requests\Clients\UpdateClientRequest;
 use App\Http\Resources\Clients\ClientResource;
 use App\Models\Client;
-use App\Models\SampleResult;
+use App\Models\Result;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 

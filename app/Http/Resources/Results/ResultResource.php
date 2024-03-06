@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Resources\SampleResults;
+namespace App\Http\Resources\Results;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class SampleResultResource extends JsonResource
+class ResultResource extends JsonResource
 {
     public static $wrap = false;
 
@@ -17,8 +17,8 @@ class SampleResultResource extends JsonResource
             'client_id' => $this->client_id,
             'client_name' => $this->client?->name,
             'client_address' => $this->client?->address,
-            'sample_result_date' => $this->sample_result_date,
-            'details' => SampleResultDetailResource::collection($this->resultDetails)
+            'result_date' => $this->result_date,
+            'details' => ResultDetailResource::collection($this->resultDetails)
         ];
     }
 }
