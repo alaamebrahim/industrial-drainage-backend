@@ -13,7 +13,7 @@ class ClaimDetailResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'result_id' => $this->result_id,
+            'claim_id' => $this->claim_id,
             'key' => $this->key,
             'value' => $this->value,
         ];

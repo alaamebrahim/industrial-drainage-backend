@@ -5,9 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $result_id
@@ -38,19 +39,35 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @method static \Illuminate\Database\Eloquent\Builder|Claim whereStartDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Claim whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Claim whereUpdatedAt($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ClaimDetail> $details
+ * @property-read int|null $details_count
  * @mixin \Eloquent
  */
 class Claim extends Model
 {
     use HasFactory;
 
+    protected $casts = [
+        'total_amount' => 'float'
+    ];
+
     public function client(): BelongsTo
     {
-        return $this->belongsTo(Client::class);
+        return $this->belongsTo(Client::class, 'client_id');
     }
 
     public function result(): BelongsTo
     {
-        return $this->belongsTo(Result::class);
+        return $this->belongsTo(Result::class, 'result_id');
+    }
+
+    public function details(): HasMany
+    {
+        return $this->hasMany(ClaimDetail::class);
+    }
+
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
     }
 }

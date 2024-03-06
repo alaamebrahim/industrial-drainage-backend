@@ -6,6 +6,7 @@ use App\Http\Controllers\Claims\ClaimsController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\LoggedInUserInfoController;
+use App\Http\Controllers\Payments\PaymentsController;
 use App\Http\Controllers\Results\ResultsController;
 use App\Http\Controllers\Samples\SampleDetailsController;
 use App\Http\Controllers\Samples\SamplesController;
@@ -16,7 +17,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
-Route::resource('claim-test', ClaimsController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
 
@@ -33,7 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('results', ResultsController::class);
 
     // Claims
-    Route::resource('claims', ClaimsController::class);
+    Route::resource('claims', ClaimsController::class)->only(['index', 'show', 'store', 'destroy']);
+
+    // Payments
+    Route::resource('payments', PaymentsController::class)->only(['index', 'show', 'store', 'destroy']);
 
     // API
 //    Route::group(['prefix' => 'list'], function () {

@@ -28,4 +28,8 @@ use Illuminate\Database\Eloquent\Model;
 class ClaimDetail extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'value' => 'float'
+    ];
 }

@@ -1,63 +1,53 @@
 <?php
 
-namespace App\Http\Controllers\Claims;
+namespace App\Http\Controllers\Payments;
 
-use App\DataProcessors\Claims\ClaimDataProcess;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Claims\StoreClaimRequest;
-use App\Http\Requests\SampleResults\StoreResultRequest;
-use App\Http\Requests\SampleResults\UpdateResultRequest;
-use App\Http\Resources\Claims\ClaimResource;
-use App\Http\Resources\Results\ResultResource;
+use App\Http\Requests\Payments\StorePaymentRequest;
+use App\Http\Resources\Payments\PaymentResource;
 use App\Models\Claim;
-use App\Models\ClaimDetail;
-use App\Models\Result;
-use App\Models\ResultDetail;
+use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 
-class ClaimsController extends Controller
+class PaymentsController extends Controller
 {
     public function index(): JsonResponse
     {
-        $data = Claim::query()
+        $data = Payment::query()
             ->with([
-                'client',
-                'result',
-                'details',
+                'claim',
+                'claim.client'
             ])
             ->orderBy('id', 'desc')
             ->paginate(25);
         return response()->json([
             'success' => true,
-            'data' => ClaimResource::collection($data)->resource,
+            'data' => PaymentResource::collection($data)->resource,
         ]);
     }
 
     public function show($id): JsonResponse
     {
-        $data = Claim::query()
+        $data = Payment::query()
             ->with([
-                'client',
-                'result',
-                'details',
+                'claim',
+                'claim.client'
             ])
             ->where('id', $id)
             ->first();
         return response()->json([
             'success' => true,
-            'data' => new ClaimResource($data),
+            'data' => new PaymentResource($data),
         ]);
     }
 
-    public function store(StoreClaimRequest $request): JsonResponse
+    public function store(StorePaymentRequest $request): JsonResponse
     {
         try {
             DB::beginTransaction();
 
-            $claim = Claim::query()->create($request->validated());
-
-            ClaimDataProcess::calculate($claim);
+            $payment = Payment::query()->create($request->validated());
 
             DB::commit();
         } catch (\Throwable $exception) {
@@ -75,15 +65,13 @@ class ClaimsController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy($id): JsonResponse
     {
 
         try {
             DB::beginTransaction();
 
-            ClaimDetail::query()->where('claim_id', $id)->delete();
-
-            Claim::query()->where('id', $id)->delete();
+            Payment::query()->where('id', $id)->delete();
 
             DB::commit();
         } catch (\Throwable $exception) {
