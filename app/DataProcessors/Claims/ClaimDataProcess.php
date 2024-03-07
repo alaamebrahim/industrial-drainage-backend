@@ -21,11 +21,24 @@ class ClaimDataProcess
 
         $endDate = $claim->end_date;
 
+        $valuesToCheck = [1, 2];
+
+        $arrayToSearch = $result->resultDetails->map(fn ($resultDetail) => $resultDetail->sample_id)->toArray();
+
+        $calculate60PercentageOfCOD = count(array_intersect($valuesToCheck, $arrayToSearch)) === count($valuesToCheck);
+
+
         $totalAmount = 0;
         collect($result->resultDetails)
-            ->each(function (ResultDetail $resultDetail) use (&$totalAmount, $resultDate, $startDate, $endDate, $claim) {
+            ->each(function (ResultDetail $resultDetail) use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD) {
                 $value = self::calculateValue($resultDetail, $claim, $resultDate, $startDate, $endDate);
+
+                if ($resultDetail->sample_id == 3 && $calculate60PercentageOfCOD) {
+                    $value = $value * 0.6;
+                }
+
                 $resultDetail->load(['sampleDetail.sample']);
+
                 ClaimDetail::query()->create([
                     'claim_id' => $claim->id,
                     'key' => $resultDetail->sampleDetail?->sample?->name,
