@@ -2,11 +2,14 @@
 
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Claims\ClaimDetailsController;
 use App\Http\Controllers\Claims\ClaimsController;
+use App\Http\Controllers\Clients\ClientDetailsController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\LoggedInUserInfoController;
 use App\Http\Controllers\Payments\PaymentsController;
+use App\Http\Controllers\Results\ResultDetailsController;
 use App\Http\Controllers\Results\ResultsController;
 use App\Http\Controllers\Samples\SampleDetailsController;
 use App\Http\Controllers\Samples\SamplesController;
@@ -24,16 +27,20 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Clients
     Route::resource('clients', ClientsController::class);
+    Route::post('client-details/{id}', ClientDetailsController::class);
+    Route::post('result-details/{id}', ResultDetailsController::class);
 
     // Samples
     Route::resource('samples', SamplesController::class);
     Route::resource('sample-details', SampleDetailsController::class);
 
-    // Sample results
+    // results
     Route::resource('results', ResultsController::class);
+    Route::post('result-details/{id}', ResultDetailsController::class);
 
     // Claims
     Route::resource('claims', ClaimsController::class)->only(['index', 'show', 'store', 'destroy']);
+    Route::post('claim-details/{id}', ClaimDetailsController::class);
 
     // Payments
     Route::resource('payments', PaymentsController::class)->only(['index', 'show', 'store', 'destroy']);
