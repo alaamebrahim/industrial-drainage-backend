@@ -19,6 +19,9 @@ class ClientResource extends JsonResource
             'letter_heading' => $this->letter_heading,
             'consumption' => $this->consumption,
             'is_active' => $this->is_active,
+            'total_amount' => $totalAmount = $this->claims->sum('total_amount'),
+            'amount_paid' => $amountPaid = $this->payments->sum('amount'),
+            'net_amount' => $totalAmount - $amountPaid,
         ];
     }
 }
