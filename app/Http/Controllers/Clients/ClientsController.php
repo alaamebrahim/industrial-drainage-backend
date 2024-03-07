@@ -18,8 +18,8 @@ class ClientsController extends Controller
     {
         $data = Client::query()
             ->orderBy('id', 'desc')
-            ->when($request->has('is_active'), fn($query) => $query->where('is_active', $request->boolean('is_active')))
-            ->when($request->has('search'), fn($query) => $query->whereLike(['name', 'address'], $request->str('search')))
+            ->when($request->filled('is_active'), fn($query) => $query->where('is_active', $request->boolean('is_active')))
+            ->when($request->filled('search'), fn($query) => $query->whereLike(['name', 'address'], $request->string('search')))
             ->paginate(25);
         return response()->json([
             'success' => true,

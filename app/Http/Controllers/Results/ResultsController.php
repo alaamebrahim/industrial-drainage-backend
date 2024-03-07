@@ -9,13 +9,17 @@ use App\Http\Resources\Results\ResultResource;
 use App\Models\Result;
 use App\Models\ResultDetail;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ResultsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $data = Result::query()
+            ->when($request->filled('is_active'), fn($query) => $query->whereHas('client', fn($query) => $query->where('is_active', $request->boolean('is_active'))))
+            ->when($request->filled('result_date'), fn($query) => $query->where('result_date', $request->date('result_date')))
+            ->when($request->filled('search'), fn($query) => $query->whereHas('client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
             ->with([
                 'client',
                 'resultDetails.sample',

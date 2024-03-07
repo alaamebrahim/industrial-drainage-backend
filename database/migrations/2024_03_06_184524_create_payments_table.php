@@ -12,7 +12,7 @@ return new class extends Migration {
             $table->foreignId('claim_id')->references('id')->on('claims');
             $table->date('payment_date');
             $table->string('payment_method');
-            $table->string('amount');
+            $table->decimal('amount', 12, 3);
             $table->longText('notes')->nullable();
             $table->timestamps();
         });

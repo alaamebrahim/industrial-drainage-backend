@@ -8,13 +8,18 @@ use App\Http\Resources\Payments\PaymentResource;
 use App\Models\Claim;
 use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class PaymentsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $data = Payment::query()
+            ->when($request->filled('is_active'), fn($query) => $query->whereHas('claim.client', fn($query) => $query->where('is_active', $request->boolean('is_active'))))
+            ->when($request->filled('payment_date'), fn($query) => $query->where('payment_date', $request->date('payment_date')))
+            ->when($request->filled('search'), fn($query) => $query->whereHas('claim.client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
+
             ->with([
                 'claim',
                 'claim.client'

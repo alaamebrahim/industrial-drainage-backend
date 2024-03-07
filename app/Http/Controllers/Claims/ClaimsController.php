@@ -11,16 +11,18 @@ use App\Http\Resources\Claims\ClaimResource;
 use App\Http\Resources\Results\ResultResource;
 use App\Models\Claim;
 use App\Models\ClaimDetail;
-use App\Models\Result;
-use App\Models\ResultDetail;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ClaimsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         $data = Claim::query()
+            ->when($request->filled('is_active'), fn($query) => $query->whereHas('client', fn($query) => $query->where('is_active', $request->boolean('is_active'))))
+            ->when($request->filled('end_date'), fn($query) => $query->where('end_date', $request->date('end_date')))
+            ->when($request->filled('search'), fn($query) => $query->whereHas('client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
             ->with([
                 'client',
                 'result',
