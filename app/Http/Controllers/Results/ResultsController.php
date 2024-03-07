@@ -18,7 +18,8 @@ class ResultsController extends Controller
     {
         $data = Result::query()
             ->when($request->filled('is_active'), fn($query) => $query->whereHas('client', fn($query) => $query->where('is_active', $request->boolean('is_active'))))
-            ->when($request->filled('result_date'), fn($query) => $query->where('result_date', $request->date('result_date')))
+            ->when($request->filled('result_date_from'), fn($query) => $query->whereDate('result_date', '>=', $request->date('result_date_from')))
+            ->when($request->filled('result_date_to'), fn($query) => $query->whereDate('result_date', '<=', $request->date('result_date_to')))
             ->when($request->filled('search'), fn($query) => $query->whereHas('client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
             ->with([
                 'client',
