@@ -9,13 +9,18 @@ use App\Http\Resources\Clients\ClientResource;
 use App\Models\Client;
 use App\Models\Result;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class ClientsController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
-        $data = Client::query()->orderBy('id', 'desc')->paginate(25);
+        $data = Client::query()
+            ->orderBy('id', 'desc')
+            ->when($request->has('is_active'), fn($query) => $query->where('is_active', $request->boolean('is_active')))
+            ->when($request->has('search'), fn($query) => $query->whereLike(['name', 'address'], $request->str('search')))
+            ->paginate(25);
         return response()->json([
             'success' => true,
             'data' => ClientResource::collection($data)->resource,
