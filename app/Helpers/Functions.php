@@ -79,3 +79,13 @@ if (! function_exists('userName')) {
         return '';
     }
 }
+
+if (! function_exists('tafqeet')) {
+    function tafqeet(int|float $number)
+    {
+        logger()->info($number);
+        logger()->info(number_format($number, 2, ',', ''));
+
+        return Numbers::TafqeetMoney(number_format($number, 2, '.', ''), 'EGP');
+    }
+}
