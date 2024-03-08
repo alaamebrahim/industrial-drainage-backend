@@ -13,7 +13,7 @@ class LoginController extends Controller
 {
     public function __invoke(LoginRequest $request): JsonResponse
     {
-        if (Auth::attempt(['name' => $request->get('username'), 'password' => $request->get('password')])) {
+        if (Auth::attempt(['name' => $request->get('username'), 'password' => $request->get('password'), 'is_active' => true])) {
 
             $user = Auth::user();
 

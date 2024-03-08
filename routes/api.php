@@ -8,13 +8,13 @@ use App\Http\Controllers\Clients\ClientDetailsController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\LoggedInUserInfoController;
+use App\Http\Controllers\Manage\Users\UserPermissionsController;
+use App\Http\Controllers\Manage\Users\UsersController;
 use App\Http\Controllers\Payments\PaymentsController;
 use App\Http\Controllers\Results\ResultDetailsController;
 use App\Http\Controllers\Results\ResultsController;
 use App\Http\Controllers\Samples\SampleDetailsController;
 use App\Http\Controllers\Samples\SamplesController;
-use App\Http\Controllers\Users\UserPermissionsController;
-use App\Http\Controllers\Users\UsersController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -22,6 +22,11 @@ Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Manage
+    Route::group(['prefix' => 'manage'], function () {
+        Route::resource('users', UsersController::class);
+    });
 
     Route::get('user-info', LoggedInUserInfoController::class);
 
