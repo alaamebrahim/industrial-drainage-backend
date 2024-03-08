@@ -21,8 +21,6 @@ class ClientDetailsController extends Controller
         $data = Client::query()
             ->where('id', $id)
             ->first();
-        $totalAmount = $data->claims->sum('total_amount');
-        $amountPaid = $data->claims->sum('amount_paid');
         return response()->json([
             'success' => true,
             'data' => new ClientResource($data),
