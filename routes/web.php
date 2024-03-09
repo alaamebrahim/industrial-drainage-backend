@@ -1,6 +1,7 @@
 <?php
 
-use App\DataProcessors\Claims\PrintClaimController;
+use App\DataProcessors\Claims\ClaimDataProcess;
+use App\Http\Controllers\Claims\PrintClaimController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,6 +17,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
+});
+
+Route::get('/test', function () {
+    return ClaimDataProcess::prepareResultDetails(1, 1, '2024-03-09');
 });
 
 

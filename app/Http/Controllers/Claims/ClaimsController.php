@@ -26,7 +26,6 @@ class ClaimsController extends Controller
             ->when($request->filled('search'), fn($query) => $query->whereHas('client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
             ->with([
                 'client',
-                'result',
                 'details',
             ])
             ->orderBy('id', 'desc')
@@ -42,7 +41,6 @@ class ClaimsController extends Controller
         $data = Claim::query()
             ->with([
                 'client',
-                'result',
                 'details',
             ])
             ->where('id', $id)

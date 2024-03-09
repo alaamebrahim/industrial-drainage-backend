@@ -28,7 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
         Model::$snakeAttributes = true;
         Model::preventAccessingMissingAttributes(true);
-        Model::preventLazyLoading(true);
+//        Model::preventLazyLoading(true);
 
         Model::created(function () {
             Cache::forget('dashboard_stats');

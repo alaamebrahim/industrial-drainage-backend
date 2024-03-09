@@ -11,6 +11,7 @@ use App\Http\Controllers\LoggedInUserInfoController;
 use App\Http\Controllers\Manage\Users\UserPermissionsController;
 use App\Http\Controllers\Manage\Users\UsersController;
 use App\Http\Controllers\Payments\PaymentsController;
+use App\Http\Controllers\Results\ClientResultsDataController;
 use App\Http\Controllers\Results\ResultDetailsController;
 use App\Http\Controllers\Results\ResultsController;
 use App\Http\Controllers\Samples\SampleDetailsController;
@@ -33,7 +34,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Clients
     Route::resource('clients', ClientsController::class);
     Route::post('client-details/{id}', ClientDetailsController::class);
-    Route::post('result-details/{id}', ResultDetailsController::class);
 
     // Samples
     Route::resource('samples', SamplesController::class);
@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // results
     Route::resource('results', ResultsController::class);
     Route::post('result-details/{id}', ResultDetailsController::class);
+    Route::post('client-results/{id}', ClientResultsDataController::class);
 
     // Claims
     Route::resource('claims', ClaimsController::class)->only(['index', 'show', 'store', 'destroy']);

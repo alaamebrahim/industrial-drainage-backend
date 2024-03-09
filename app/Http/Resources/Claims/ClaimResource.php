@@ -20,7 +20,6 @@ class ClaimResource extends JsonResource
             'client_consumption' => $this->client?->consumption,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
-            'result_date' => $this->result?->result_date,
             'claim_consumption' => $this->consumption,
             'total_amount' => $this->total_amount,
             'amount_paid' => $this->payments()->sum('amount'),

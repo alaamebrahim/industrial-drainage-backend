@@ -14,12 +14,10 @@ class StoreClaimRequest extends JsonFormRequest
     public function rules(): array
     {
         return [
-            'result_id' => ['required'],
             'client_id' => ['required'],
             'consumption' => ['required'],
             'start_date' => ['required', 'date'],
             'end_date' => ['required', 'date'],
-            'result_date' => ['required', 'date'],
         ];
     }
 }

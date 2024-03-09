@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $sample_id
@@ -32,6 +32,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class SampleDetail extends Model
 {
     use HasFactory;
+
+    protected $casts = [
+        'duration' => 'float',
+        'price' => 'float'
+    ];
 
     public function sample(): BelongsTo
     {

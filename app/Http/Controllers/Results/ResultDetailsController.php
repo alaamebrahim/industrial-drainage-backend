@@ -21,6 +21,7 @@ class ResultDetailsController extends Controller
             ->select(['id', 'client_id', 'result_date'])
             ->with([
                 'resultDetails.sample',
+                'resultDetails.result',
                 'resultDetails.sampleDetail',
             ])
             ->first();

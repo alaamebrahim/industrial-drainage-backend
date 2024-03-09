@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('claim_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('claim_id')->references('id')->on('claims');
+            $table->foreignId('result_detail_id')->references('id')->on('result_details');
             $table->string('key');
             $table->decimal('value',12,3);
             $table->timestamps();

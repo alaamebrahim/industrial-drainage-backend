@@ -14,6 +14,8 @@ class ResultDetailResource extends JsonResource
         return [
             'id' => $this->id,
             'result_id' => $this->result_id,
+            'result_date' => $this->result?->result_date,
+            'result_end_date' => $this->result_end_date ?? null,
             'sample_id' => $this->sample_id,
             'sample_name' => $this->sample?->name,
             'sample_detail_name' => $this->sampleDetail?->description,

@@ -25,7 +25,6 @@ class PaymentResource extends JsonResource
             'client_address' => $this->claim?->client?->address,
             'claim_start_date' => $this->claim?->start_date,
             'claim_end_date' => $this->claim?->end_date,
-            'claim_result_date' => $this->claim?->result_date,
             'claim_total_amount' => $this->claim?->total_amount,
             'claim_amount_paid' => $this->claim?->payments()->sum('amount'),
         ];

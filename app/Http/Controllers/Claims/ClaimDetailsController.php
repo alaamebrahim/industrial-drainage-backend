@@ -17,7 +17,6 @@ class ClaimDetailsController extends Controller
         $data = Claim::query()
             ->with([
                 'client',
-                'result',
                 'details',
             ])
             ->where('id', $id)

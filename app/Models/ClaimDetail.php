@@ -4,9 +4,10 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $claim_id
@@ -32,4 +33,9 @@ class ClaimDetail extends Model
     protected $casts = [
         'value' => 'float'
     ];
+
+    public function resultDetail(): BelongsTo
+    {
+        return $this->belongsTo(ResultDetail::class);
+    }
 }

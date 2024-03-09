@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SampleResults\StoreResultRequest;
 use App\Http\Requests\SampleResults\UpdateResultRequest;
 use App\Http\Resources\Results\ResultResource;
+use App\Models\Claim;
 use App\Models\Result;
 use App\Models\ResultDetail;
 use Illuminate\Http\JsonResponse;
@@ -24,6 +25,7 @@ class ResultsController extends Controller
             ->with([
                 'client',
                 'resultDetails.sample',
+                'resultDetails.result',
                 'resultDetails.sampleDetail',
             ])
             ->orderBy('id', 'desc')
@@ -41,6 +43,7 @@ class ResultsController extends Controller
             ->select(['id', 'client_id', 'result_date'])
             ->with([
                 'resultDetails.sample',
+                'resultDetails.result',
                 'resultDetails.sampleDetail',
             ])
             ->first();
@@ -122,6 +125,31 @@ class ResultsController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'تم الحفظ بنجاح'
+        ]);
+    }
+
+    public function destroy($id): JsonResponse
+    {
+        try {
+
+            DB::beginTransaction();
+
+            ResultDetail::query()->where('result_id', $id)->delete();
+            Result::query()->where('id', $id)->delete();
+
+            DB::commit();
+        } catch (\Throwable $exception) {
+            DB::rollBack();
+            errorLog($exception);
+            return response()->json([
+                'success' => false,
+                'message' => 'لم يتم الحفظ'
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'تم الحذف بنجاح'
         ]);
     }
 }

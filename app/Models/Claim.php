@@ -11,7 +11,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  *
  *
  * @property int $id
- * @property int $result_id
  * @property int $client_id
  * @property string $result_date
  * @property string $start_date
@@ -54,11 +53,6 @@ class Claim extends Model
     public function client(): BelongsTo
     {
         return $this->belongsTo(Client::class, 'client_id');
-    }
-
-    public function result(): BelongsTo
-    {
-        return $this->belongsTo(Result::class, 'result_id');
     }
 
     public function details(): HasMany

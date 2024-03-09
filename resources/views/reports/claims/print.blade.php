@@ -100,23 +100,27 @@
                 <thead>
                 <tr style="background: #ccc">
                     <th>نوع الملوث</th>
+                    <th>تاريخ العينة</th>
                     <th>تركيز الملوث للمصنع مللجم /لتر</th>
                     <th>مقابل الأعباء بالجنيه</th>
                     <th>مهلة توفيق الأوضاع</th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($result->resultDetails as $item)
+                @forelse($results as $result)
+                @forelse($result->resultDetails as $item)
                     <tr>
                         <td>{{ $item->sample?->name }}</td>
+                        <td>{{ $result->result_date }}</td>
                         <td>{{$item->value}}</td>
                         <td>{{$item->sampleDetail?->price}}</td>
                         <td>{{$item->sampleDetail?->duration > 0 ? $item->sampleDetail?->duration : '-' }} يوم </td>
                     </tr>
                 @endforeach
+                @endforeach
                 </tbody>
             </table>
-            <p>برجاء التفضل بسداد مبلغ ({{$data->total_amount}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{$data->start_date}} إلى {{$data->end_date}} وفقاً للبيان التالي:-</p>
+            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{$data->start_date}} إلى {{$data->end_date}} وفقاً للبيان التالي:-</p>
             <table class="table1">
                 <thead>
                 <tr style="background: #ccc">
@@ -128,7 +132,7 @@
                 @foreach($data->details as $item)
                     <tr>
                         <td>تكلفة إزالة <b>{{ $item->key }}</b></td>
-                        <td>{{$item->value}}</td>
+                        <td style="text-align: right; padding-right: 10px">{{number_format($item->value, 2)}}</td>
                     </tr>
                 @endforeach
                 </tbody>
