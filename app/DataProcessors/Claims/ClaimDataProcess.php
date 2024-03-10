@@ -22,16 +22,19 @@ class ClaimDataProcess
         Log::info("---------------------------------------------------------------------------------------------------------------------------------------------------");
         Log::info("Calculation start for claim: $claim->id, start_date is: $claim->start_date, end_date is: $claim->start_date, client name: {$claim->client?->name}");
 
-        $results = Result::query()->where('client_id', $claim->client_id)->get();
+        $results = Result::query()
+            ->orderBy('result_date')
+            ->where('client_id', $claim->client_id)
+            ->get();
 
         Log::info("Count of results is: {$results->count()}");
 
         $totalAmount = 0;
 
-        $results->each(function (Result $result, $index) use ($claim, &$totalAmount) {
+        $results->each(function (Result $result, $index) use ($results, $claim, &$totalAmount) {
             Log::info("**************** Result index:  $index start");
 
-            $totalAmount += self::calculateSingleResult($result, $claim);
+            $totalAmount += self::calculateSingleResult($result, $claim, $results->max('id'));
 
             Log::info("**************** Result index:  $index end");
         });
@@ -45,7 +48,7 @@ class ClaimDataProcess
 
     }
 
-    public static function calculateSingleResult(Result $result, Claim $claim): float
+    public static function calculateSingleResult(Result $result, Claim $claim, int $lastResultId): float
     {
         $result->load(['resultDetails']);
 
@@ -65,11 +68,16 @@ class ClaimDataProcess
 
         self::prepareResultDetails($result->id, $claim->client_id, $endDate)
             ->each(callback: function (ResultDetailResource $resultDetail)
-            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD) {
+            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
                 Log::info("**************** Result detail id:  $resultDetail->id start");
 
                 $startDate = Carbon::parse($resultDate)->lte(Carbon::parse($startDate)) ? $startDate : $resultDate;
-                $endDate = Carbon::parse($resultDetail->result_end_date)->lte(Carbon::parse($endDate)) ? $resultDetail->result_end_date : $endDate;
+
+                if ($lastResultId == $result->id) {
+                    $endDate = $claim->end_date;
+                } else {
+                    $endDate = Carbon::parse($resultDetail->result_end_date)->lte(Carbon::parse($endDate)) ? $resultDetail->result_end_date : $endDate;
+                }
 
                 Log::info("endDate for resultDetail $resultDetail->id is: $endDate");
 
@@ -195,18 +203,26 @@ class ClaimDataProcess
     protected static function getSampleDetail(int $sampleDetailId): array
     {
         $sampleDetail = SampleDetail::query()->find($sampleDetailId);
-        return [(int)$sampleDetail->price, (int)$sampleDetail->duration];
+        return [(float)$sampleDetail->price, (int)$sampleDetail->duration];
     }
 
     public static function calculateArray($resultDate, $startDate, $endDate, $time_limit): array
     {
-        $start_difference = Carbon::parse($resultDate)->startOfDay()->diffInDays(Carbon::parse($startDate)->startOfDay());
+        $start_difference = Carbon::parse($resultDate)->startOfDay()->diffInDays(Carbon::parse($startDate)->endOfDay());
+
+        Log::info("time_limit is: $time_limit");
 
         Log::info("start_difference is: $start_difference");
 
-        $total_duration = Carbon::parse($startDate)->startOfDay()->diffInDays(Carbon::parse($endDate)->startOfDay()) + 1;
+        $total_duration = Carbon::parse($startDate)->startOfDay()->diffInDays(Carbon::parse($endDate)->endOfDay()) + 1;
 
         Log::info("total_duration is: $total_duration");
+
+        if ($time_limit == 0) {
+            return [
+                $total_duration
+            ];
+        }
 
         $repetitions = floor(($total_duration + $start_difference) / $time_limit);
 

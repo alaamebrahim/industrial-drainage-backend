@@ -18,7 +18,11 @@ class ClientResultsDataController extends Controller
             ->where('id', $id)
             ->first();
 
-        $resultDetails = ClaimDataProcess::prepareResultDetails(resultId: null, clientId: $id, endDate: now()->format('Y-m-d'));
+        $resultDetails = ClaimDataProcess::prepareResultDetails(
+            resultId: null,
+            clientId: $id,
+            endDate: now()->format('Y-m-d')
+        );
 
 
         return response()->json([
