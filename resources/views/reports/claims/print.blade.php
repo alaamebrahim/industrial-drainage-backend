@@ -79,7 +79,6 @@
                 <h4>جهاز تنمية مدينة دمياط الجديدة</h4>
             </div>
             <div style="flex-grow: 2; text-align: center">
-                <h4 style="font-weight: bold !important;"> مطالبة أعباء صرف صناعي</h4>
             </div>
             <div style="line-height: 1px">
                 <img src="{{ asset('img/logo.jpg') }}" style="height: 85px" alt=""/>
@@ -88,11 +87,13 @@
         </div>
         <hr style="border: 1px dashed #000; margin-top: 0.2cm"/>
         <div class="body">
-            <h4>{{ $client->letter_heading}}</h4>
+            <h4 style="font-weight: bold !important; text-align: center; text-decoration: underline; font-size: 18px"> مطالبة أعباء صرف صناعي</h4>
+
+            <h4 >{{ $client->letter_heading}}</h4>
             <h4>العنوان: {{ $client->address}}</h4>
             <h4 style="text-align: center">تحية طيبة وبعد ،،،</h4>
             <p>
-                <b>الموضوع /</b> اثناء المرور الدوري للجنة الصرف الصناعي علي مصنعكم الموقر تم أخذ عينة من السيب النهائي قبل الصرف علي الشبكة العمومية              وتم عمل محضر بذلك وتم أخذ عدد (  1 ) عينة من عدد ( 1   ) مخرج بتاريخ    24 /   06    /  2019   م .
+                <b>الموضوع /</b> اثناء المرور الدوري للجنة الصرف الصناعي علي الجهة بالعنوان الموضح بعاليه ،تم أخذ عينة من السيب النهائي قبل الصرف علي الشبكة العمومية ،وتم عمل محضر بذلك ،وتم أخذ عينة بالتواريخ الموضحة بالجدول أدناه .
                 وبناء علي ما سبق  و طبقاً لقرار السيد رئيس مجلس الوزراء رقم 1012 لسنة 2018 ( اللائحة التجارية الموحدة ) لمقابل أعباء معالجة صرف المنشآت الصناعية لمعايير القرار الوزاري رقم 44 لسنة 2000 م و طبقا لنتائج تحليل العينة طرفكم الموضحة بالجدول التالي:
             </p>
             <table class="table1">
@@ -119,7 +120,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{$data->start_date}} إلى {{$data->end_date}} واستهلاك شهري ({{$data->consumption}}م3) وفقاً للبيان التالي:-</p>
+            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{\Illuminate\Support\Carbon::parse($data->start_date)->format('Y/m/d')}} إلى {{\Illuminate\Support\Carbon::parse($data->end_date)->format('Y/m/d')}} واستهلاك شهري ({{$data->consumption}}م3) وفقاً للبيان التالي:-</p>
             <table class="table1">
                 <thead>
                 <tr style="background: #ccc">

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AppInfoController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Claims\ClaimDetailsController;
@@ -21,6 +22,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
+Route::get('app-info', AppInfoController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
 
