@@ -40,7 +40,7 @@
             justify-content: center;
         }
 
-        .table1 td, .table1 tr ,.table1 th  {
+        .table1 td, .table1 tr, .table1 th {
             border: 1px solid #5c5c5c;
         }
 
@@ -79,6 +79,7 @@
                 <h4>جهاز تنمية مدينة دمياط الجديدة</h4>
             </div>
             <div style="flex-grow: 2; text-align: center">
+                <p style="color: #252525;">تاريخ الطباعة: {{now()->format('Y-m-d')}}</p>
             </div>
             <div style="line-height: 1px">
                 <img src="{{ asset('img/logo.jpg') }}" style="height: 85px" alt=""/>
@@ -86,15 +87,23 @@
 
         </div>
         <hr style="border: 1px dashed #000; margin-top: 0.2cm"/>
-        <div class="body">
-            <h4 style="font-weight: bold !important; text-align: center; text-decoration: underline; font-size: 18px"> مطالبة أعباء صرف صناعي</h4>
 
-            <h4 >{{ $client->letter_heading}}</h4>
+        <div class="body">
+
+            <h4 style="font-weight: bold !important; text-align: center; text-decoration: underline; font-size: 18px">
+                مطالبة أعباء صرف صناعي
+            </h4>
+
+            <h4>{{ $client->letter_heading}}</h4>
             <h4>العنوان: {{ $client->address}}</h4>
             <h4 style="text-align: center">تحية طيبة وبعد ،،،</h4>
             <p>
-                <b>الموضوع /</b> اثناء المرور الدوري للجنة الصرف الصناعي علي الجهة بالعنوان الموضح بعاليه ،تم أخذ عينة من السيب النهائي قبل الصرف علي الشبكة العمومية ،وتم عمل محضر بذلك ،وتم أخذ عينة بالتواريخ الموضحة بالجدول أدناه .
-                وبناء علي ما سبق  و طبقاً لقرار السيد رئيس مجلس الوزراء رقم 1012 لسنة 2018 ( اللائحة التجارية الموحدة ) لمقابل أعباء معالجة صرف المنشآت الصناعية لمعايير القرار الوزاري رقم 44 لسنة 2000 م و طبقا لنتائج تحليل العينة طرفكم الموضحة بالجدول التالي:
+                <b>الموضوع /</b> اثناء المرور الدوري للجنة الصرف الصناعي علي الجهة بالعنوان الموضح بعاليه ،تم أخذ عينة
+                من السيب النهائي قبل الصرف علي الشبكة العمومية ،وتم عمل محضر بذلك ،وتم أخذ عينة بالتواريخ الموضحة
+                بالجدول أدناه .
+                وبناء علي ما سبق و طبقاً لقرار السيد رئيس مجلس الوزراء رقم 1012 لسنة 2018 ( اللائحة التجارية الموحدة )
+                لمقابل أعباء معالجة صرف المنشآت الصناعية لمعايير القرار الوزاري رقم 44 لسنة 2000 م و طبقا لنتائج تحليل
+                العينة طرفكم الموضحة بالجدول التالي:
             </p>
             <table class="table1">
                 <thead>
@@ -108,19 +117,22 @@
                 </thead>
                 <tbody>
                 @forelse($results as $result)
-                @forelse($result->resultDetails as $item)
-                    <tr>
-                        <td>{{ $item->sample?->name }}</td>
-                        <td>{{ $result->result_date }}</td>
-                        <td>{{$item->value}}</td>
-                        <td>{{$item->sampleDetail?->price}}</td>
-                        <td>{{$item->sampleDetail?->duration > 0 ? $item->sampleDetail?->duration : '-' }} يوم </td>
-                    </tr>
-                @endforeach
-                @endforeach
+                    @forelse($result->resultDetails as $item)
+                        <tr>
+                            <td>{{ $item->sample?->name }}</td>
+                            <td>{{ $result->result_date }}</td>
+                            <td>{{$item->value}}</td>
+                            <td>{{$item->sampleDetail?->price}}</td>
+                            <td>{{$item->sampleDetail?->duration > 0 ? $item->sampleDetail?->duration : '-' }} يوم</td>
+                        </tr>
+                        @endforeach
+                        @endforeach
                 </tbody>
             </table>
-            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{\Illuminate\Support\Carbon::parse($data->start_date)->format('Y/m/d')}} إلى {{\Illuminate\Support\Carbon::parse($data->end_date)->format('Y/m/d')}} واستهلاك شهري ({{$data->consumption}}م3) وفقاً للبيان التالي:-</p>
+            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}}) {{tafqeet($data->total_amount)}}
+                ،وذلك عن الفترة من {{\Illuminate\Support\Carbon::parse($data->start_date)->format('Y/m/d')}}
+                إلى {{\Illuminate\Support\Carbon::parse($data->end_date)->format('Y/m/d')}} واستهلاك شهري
+                ({{$data->consumption}}م3) وفقاً للبيان التالي:-</p>
             <table class="table1">
                 <thead>
                 <tr style="background: #ccc">
@@ -138,7 +150,8 @@
                 </tbody>
             </table>
             <p>
-                لذا نلزمكم بضرورة سداد المستحقات المالية خلال المهلة المحددة وإلا سنضطر إلي مضاعفة قيمة المستحقات وإصدار قرار غلق إداري للمنشأة طبقا لقرار مجلس الوزراء رقم 1012 لسنة 2018 .
+                لذا نلزمكم بضرورة سداد المستحقات المالية خلال المهلة المحددة وإلا سنضطر إلي مضاعفة قيمة المستحقات وإصدار
+                قرار غلق إداري للمنشأة طبقا لقرار مجلس الوزراء رقم 1012 لسنة 2018 .
             </p>
             <table style="width: 100%; border: 0">
                 <tr style="text-align: center; border: 0">
@@ -146,7 +159,7 @@
                     <td style="border: 0">المشرف على اللجنة</td>
                     <td style="width: 30%; border: 0">
                         <h3 style="">رئيس الجهاز</h3>
-                        <h3 style="text-align: right; margin-right: -30px">د. مهندس</h3>
+                        <h3 style="text-align: right; margin-right: -30px">د. مهندس/</h3>
                         <h3>محمد خلف الله عبد الماجد</h3>
                     </td>
                 </tr>
