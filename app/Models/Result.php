@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * 
+ *
  *
  * @property int $id
  * @property int $client_id
@@ -40,6 +40,6 @@ class Result extends Model
 
     public function resultDetails(): HasMany
     {
-        return $this->hasMany(ResultDetail::class, 'result_id');
+        return $this->hasMany(ResultDetail::class, 'result_id')->orderBy('id', 'desc');
     }
 }

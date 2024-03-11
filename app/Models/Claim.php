@@ -57,7 +57,7 @@ class Claim extends Model
 
     public function details(): HasMany
     {
-        return $this->hasMany(ClaimDetail::class);
+        return $this->hasMany(ClaimDetail::class)->orderBy('id');
     }
 
     public function payments(): HasMany

@@ -22,6 +22,7 @@ PrintClaimController extends Controller
                 ->whereHas('resultDetails', function (Builder $builder) use ($claim) {
                     $builder->whereIn('result_details.id', $claim->details()?->pluck('result_detail_id'));
                 })
+                ->orderBy('id', 'asc')
                 ->get()
             ,
             'client' => $claim->client

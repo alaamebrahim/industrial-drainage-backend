@@ -79,11 +79,10 @@
                 <h4>جهاز تنمية مدينة دمياط الجديدة</h4>
             </div>
             <div style="flex-grow: 2; text-align: center">
-                <h4> مطالبة أعباء صرف صناعي</h4>
-                <h4>تاريخ الطباعة: {{now()->format('Y-m-d')}}</h4>
+                <h4 style="font-weight: bold !important;"> مطالبة أعباء صرف صناعي</h4>
             </div>
             <div style="line-height: 1px">
-                <img src="{{ asset('img/logo.jpg') }}" style="height: 120px"/>
+                <img src="{{ asset('img/logo.jpg') }}" style="height: 85px" alt=""/>
             </div>
 
         </div>
@@ -120,7 +119,7 @@
                 @endforeach
                 </tbody>
             </table>
-            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{$data->start_date}} إلى {{$data->end_date}} وفقاً للبيان التالي:-</p>
+            <p>برجاء التفضل بسداد مبلغ ({{number_format($data->total_amount, 2)}})  {{tafqeet($data->total_amount)}}  ،وذلك عن الفترة من {{$data->start_date}} إلى {{$data->end_date}} واستهلاك شهري ({{$data->consumption}}م3) وفقاً للبيان التالي:-</p>
             <table class="table1">
                 <thead>
                 <tr style="background: #ccc">
