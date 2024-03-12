@@ -5,10 +5,7 @@ namespace App\Http\Controllers\Claims;
 use App\DataProcessors\Claims\ClaimDataProcess;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Claims\StoreClaimRequest;
-use App\Http\Requests\SampleResults\StoreResultRequest;
-use App\Http\Requests\SampleResults\UpdateResultRequest;
 use App\Http\Resources\Claims\ClaimResource;
-use App\Http\Resources\Results\ResultResource;
 use App\Models\Claim;
 use App\Models\ClaimDetail;
 use Illuminate\Http\JsonResponse;
@@ -28,11 +25,16 @@ class ClaimsController extends Controller
                 'client',
                 'details',
             ])
-            ->orderBy('id', 'desc')
-            ->paginate(25);
+            ->orderBy('id', 'desc');
         return response()->json([
             'success' => true,
-            'data' => ClaimResource::collection($data)->resource,
+            'stats' => [
+                'count' => $data->count(),
+                'total_amount' => number_format($totalAmount = $data->sum('total_amount'), 2),
+                'amount_paid' => number_format($amountPaid = $data->sum('amount_paid'), 2),
+                'net_amount' => number_format($totalAmount - $amountPaid, 2)
+            ],
+            'data' => ClaimResource::collection($data->paginate(25))->resource,
         ]);
     }
 
