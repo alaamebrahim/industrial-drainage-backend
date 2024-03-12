@@ -7,7 +7,7 @@ use App\Http\Controllers\Claims\ClaimDetailsController;
 use App\Http\Controllers\Claims\ClaimsController;
 use App\Http\Controllers\Clients\ClientDetailsController;
 use App\Http\Controllers\Clients\ClientsController;
-use App\Http\Controllers\Dashboard\DashboardController;
+use App\Http\Controllers\DashboardStatsController;
 use App\Http\Controllers\LoggedInUserInfoController;
 use App\Http\Controllers\Manage\Users\UserPermissionsController;
 use App\Http\Controllers\Manage\Users\UsersController;
@@ -22,9 +22,12 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
-Route::get('app-info', AppInfoController::class);
+Route::post('app-info', AppInfoController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Dashboard
+    Route::post('dashboard-stats', DashboardStatsController::class);
 
     // Manage
     Route::group(['prefix' => 'manage'], function () {
@@ -56,9 +59,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // API
 //    Route::group(['prefix' => 'list'], function () {
 //    });
-
-    // Dashboard
-    Route::get('dashboard', DashboardController::class);
 
     // Users
     Route::resource('users', UsersController::class);
