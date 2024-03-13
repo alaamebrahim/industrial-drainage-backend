@@ -101,11 +101,11 @@
                     <th>#</th>
                     <th>اسم العميل</th>
                     <th>العنوان</th>
+                    <th>عدد العينات</th>
                     <th>عدد المطالبات</th>
                     <th>إجمالي المطالبات</th>
                     <th>إجمالي المسدد</th>
                     <th>صافي المديونية</th>
-                    <th>عدد العينات</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -114,11 +114,11 @@
                         <td>{{$loop->index + 1}}</td>
                         <td>{{ $client['name'] }}</td>
                         <td>{{ $client['address'] }}</td>
+                        <td>{{ $client['results_count'] }}</td>
                         <td>{{ $client['claims_count'] }}</td>
                         <td>{{ number_format($client['total_amount'], 2)}}</td>
                         <td>{{ number_format($client['amount_paid'], 2) }}</td>
                         <td>{{ number_format($client['net_amount'], 2) }}</td>
-                        <td>{{ $client['results_count'] }}</td>
                     </tr>
                 @empty
                 @endforelse
@@ -126,11 +126,11 @@
                 <tfoot>
                 <tr style="background: #ccc; font-weight: bold">
                     <td style="padding: 10px" colspan="3">الإجمالي</td>
+                    <td>{{ $data->sum('results_count') }}</td>
                     <td>{{ $data->sum('claims_count') }}</td>
                     <td>{{ $data->sum('total_amount') }}</td>
                     <td>{{ $data->sum('amount_paid') }}</td>
                     <td>{{ $data->sum('net_amount') }}</td>
-                    <td>{{ $data->sum('results_count') }}</td>
                 </tr>
                 </tfoot>
             </table>

@@ -157,7 +157,8 @@
                 <tr style="text-align: center; border: 0">
                     <td style="border: 0">المختص</td>
                     <td style="border: 0">المشرف على اللجنة</td>
-                    <td style="width: 30%; border: 0">
+                    <td style="border: 0; text-align: right">نائب رئيس الجهاز</td>
+                    <td style="width: 25%; border: 0">
                         <h3 style="">رئيس الجهاز</h3>
                         <h3 style="text-align: right; margin-right: -30px">د. مهندس/</h3>
                         <h3>محمد خلف الله عبد الماجد</h3>
