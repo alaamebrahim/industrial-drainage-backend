@@ -3,6 +3,7 @@
 use App\Http\Controllers\AppInfoController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\RefreshAccessTokenController;
 use App\Http\Controllers\Claims\ClaimDetailsController;
 use App\Http\Controllers\Claims\ClaimsController;
 use App\Http\Controllers\Clients\ClientDetailsController;
@@ -25,6 +26,9 @@ Route::post('auth/logout', LogoutController::class);
 Route::post('app-info', AppInfoController::class);
 
 Route::middleware('auth:sanctum')->group(function () {
+
+    // Auth
+    Route::post('auth/refresh-token', RefreshAccessTokenController::class);
 
     // Dashboard
     Route::post('dashboard-stats', DashboardStatsController::class);

@@ -2,6 +2,7 @@
 
 use App\DataProcessors\Claims\ClaimDataProcess;
 use App\Http\Controllers\Claims\PrintClaimController;
+use App\Http\Controllers\Clients\PrintClientsController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -19,10 +20,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/test', function () {
-    return ClaimDataProcess::prepareResultDetails(1, 1, '2024-03-09');
-});
 
+Route::prefix('print')
+    ->group(function () {
+        Route::get('/print-claim/{claimId}', PrintClaimController::class);
+        Route::get('/print-clients', PrintClientsController::class);
 
-Route::get('/print-claim/{claimId}', PrintClaimController::class);
+    });
 
