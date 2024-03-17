@@ -81,13 +81,11 @@ class ClaimDataProcess2
                 if ($lastResultId == $result->id) {
                     $endDate = $claim->end_date;
                 } else {
-                    // Error here
                     $endDate = Carbon::parse($resultDetail->result_end_date)->lte(Carbon::parse($endDate)) ? $resultDetail->result_end_date : $endDate;
                 }
 
                 Log::info("endDate for resultDetail $resultDetail->id is: $endDate");
 
-                // عايز ابعت هنا لو كان نفس البند موجود في معاينة سابقة
                 $value = self::calculateClaimDetailItemValue(
                     resultDetail: $resultDetail,
                     claim: $claim,
