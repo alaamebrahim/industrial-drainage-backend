@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::table('claim_details', function (Blueprint $table) {
             $table->date('adjustment_date')->after('end_date')->nullable();
-            $table->decimal('old_value', 12, 3)->after('value')->nullable();
         });
     }
 
@@ -18,7 +17,6 @@ return new class extends Migration
     {
         Schema::table('claim_details', function (Blueprint $table) {
             $table->dropColumn('adjustment_date');
-            $table->dropColumn('old_value');
         });
     }
 };
