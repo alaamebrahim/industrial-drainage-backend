@@ -66,13 +66,9 @@ class ClaimDataProcess2
 
         $preparedResultDetails = self::prepareResultDetails($result->id, $claim->client_id, $endDate);
 
-        // Here we will save previous $previousResultDetailResource for next loop occurrence.
-        $previousResultDetailResource = null;
-
-
         $preparedResultDetails
             ->each(callback: function (ResultDetailResource $resultDetail)
-            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId, &$previousResultDetailResource) {
+            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
                 Log::info("**************** Result detail id:  $resultDetail->id start");
 
 

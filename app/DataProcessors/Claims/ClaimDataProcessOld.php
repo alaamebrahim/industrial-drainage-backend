@@ -14,13 +14,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
-class ClaimDataProcess
+class ClaimDataProcessOld
 {
-
     public static function calculate(Claim $claim): Claim
     {
 
-        Log::info("---------------------------------------------------------------------------------------------------------------------------------------------------");
+        Log::info('---------------------------------------------------------------------------------------------------------------------------------------------------');
         Log::info("Calculation start for claim: $claim->id, start_date is: $claim->start_date, end_date is: $claim->end_date, client name: {$claim->client?->name}");
 
         $results = Result::query()
@@ -41,7 +40,7 @@ class ClaimDataProcess
         });
 
         Log::info("Total amount of claim is: $totalAmount");
-        Log::info("---------------------------------------------------------------------------------------------------------------------------------------------------");
+        Log::info('---------------------------------------------------------------------------------------------------------------------------------------------------');
 
         $claim->update(['total_amount' => $totalAmount]);
 
@@ -61,17 +60,16 @@ class ClaimDataProcess
 
         $valuesToCheck = [1, 2];
 
-        $arrayToSearch = $result->resultDetails->map(fn($resultDetail) => $resultDetail->sample_id)->toArray();
+        $arrayToSearch = $result->resultDetails->map(fn ($resultDetail) => $resultDetail->sample_id)->toArray();
 
         $calculate60PercentageOfCOD = count(array_intersect($valuesToCheck, $arrayToSearch)) === count($valuesToCheck);
 
         $totalAmount = 0;
 
         $preparedResultDetails = self::prepareResultDetails($result->id, $claim->client_id, $endDate);
-dd($preparedResultDetails->pluck('sample_detail_id'));
+        dd($preparedResultDetails->pluck('sample_detail_id'));
         $preparedResultDetails
-            ->each(callback: function (ResultDetailResource $resultDetail)
-            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
+            ->each(callback: function (ResultDetailResource $resultDetail) use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
                 Log::info("**************** Result detail id:  $resultDetail->id start");
 
                 $startDate = Carbon::parse($resultDate)->lte(Carbon::parse($startDate)) ? $startDate : $resultDate;
@@ -94,7 +92,6 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
                 );
 
                 Log::info("value for resultDetail $resultDetail->id is: $value");
-
 
                 if ($resultDetail->sample_id == 3 && $calculate60PercentageOfCOD) {
                     Log::info("60% for COD is calculated for resultDetail $resultDetail->id");
@@ -132,7 +129,7 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
             ->orderBy('sample_id')
             ->get();
 
-        $resultDetails = $resultDetails->map(function ($detail) use ($endDate, $resultDetails, $resultId) {
+        $resultDetails = $resultDetails->map(function ($detail) use ($endDate) {
             $resultDate = $detail->result->result_date;
 
             $nextResultDate = Result::query()
@@ -140,24 +137,21 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
                 ->whereDate('result_date', '>', $resultDate)
                 ->first()?->result_date;
 
-
             // If there are newer result details, find the date before the newest result_date
             if ($nextResultDate) {
-                $resultEndDate = date('Y-m-d', strtotime("-1 day", strtotime($nextResultDate)));
+                $resultEndDate = date('Y-m-d', strtotime('-1 day', strtotime($nextResultDate)));
             } else {
                 // If there are no newer result details, set result_end_date to the day before the current result_date
-                $resultEndDate = date('Y-m-d', strtotime("-1 day", strtotime($endDate)));
+                $resultEndDate = date('Y-m-d', strtotime('-1 day', strtotime($endDate)));
             }
-
 
             // Set the result_end_date for the current detail
             $detail->result_end_date = $resultEndDate;
 
-            Log::info("Final resultDetails is: ". json_encode($detail));
+            Log::info('Final resultDetails is: '.json_encode($detail));
 
             return $detail;
-        })->filter(fn($resultDetail) => $resultId == null || $resultDetail->result_id == $resultId && Carbon::parse($resultDetail->result?->result_date)->lte($endDate));
-
+        })->filter(fn ($resultDetail) => $resultId == null || $resultDetail->result_id == $resultId && Carbon::parse($resultDetail->result?->result_date)->lte($endDate));
 
         return ResultDetailResource::collection($resultDetails)->collection;
     }
@@ -175,7 +169,7 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
             time_limit: $duration
         );
 
-        Log::info("Durations for $resultDetail->id is: " . json_encode($durations) . " startDate is $startDate and endDate is $endDate and time_limit is $duration");
+        Log::info("Durations for $resultDetail->id is: ".json_encode($durations)." startDate is $startDate and endDate is $endDate and time_limit is $duration");
 
         $value = 0;
 
@@ -183,7 +177,6 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
             ->each(function (int $duration, $index) use (&$value, $price, $consumption) {
 
                 $calculatedValue = $price * $consumption * ($duration / 30);
-
 
                 if ($index == 0) {
                     $value += $calculatedValue;
@@ -205,13 +198,15 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
 
                 }
             });
+
         return $value;
     }
 
     protected static function getSampleDetail(int $sampleDetailId): array
     {
         $sampleDetail = SampleDetail::query()->find($sampleDetailId);
-        return [(float)$sampleDetail->price, (int)$sampleDetail->duration];
+
+        return [(float) $sampleDetail->price, (int) $sampleDetail->duration];
     }
 
     public static function calculateArray($resultDate, $startDate, $endDate, $time_limit): array
@@ -228,7 +223,7 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
 
         if ($time_limit == 0) {
             return [
-                $total_duration
+                $total_duration,
             ];
         }
 
@@ -238,7 +233,7 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
 
         $result = array_fill(0, $repetitions, $time_limit);
 
-        Log::info("result is: " . json_encode($result));
+        Log::info('result is: '.json_encode($result));
 
         $remaining_duration = ($total_duration + $start_difference) - array_sum($result);
 
@@ -265,21 +260,20 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
         }
 
         return collect($result)
-            ->map(function ($resultItem, $index) use ($result, &$start_difference) {
+            ->map(function ($resultItem, $index) use (&$start_difference) {
                 if ($start_difference <= 0) {
                     return $resultItem;
                 }
 
                 if ($start_difference >= $resultItem) {
                     $start_difference -= $resultItem;
+
                     return 0;
                 }
-
 
                 $finalResultItem = $resultItem - $start_difference;
 
                 $start_difference -= $resultItem;
-
 
                 if ($start_difference < 0) {
                     $start_difference = 0;

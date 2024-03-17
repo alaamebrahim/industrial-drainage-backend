@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Claims;
 
-use App\DataProcessors\Claims\ClaimDataProcess;
 use App\DataProcessors\Claims\ClaimDataProcess2;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Claims\StoreClaimRequest;

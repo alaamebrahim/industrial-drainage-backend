@@ -1,6 +1,5 @@
 <?php
 
-use App\DataProcessors\Claims\ClaimDataProcess;
 use App\Http\Controllers\Claims\PrintClaimController;
 use App\Http\Controllers\Clients\PrintClientsController;
 use Illuminate\Support\Facades\Route;

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Results;
 
-use App\DataProcessors\Claims\ClaimDataProcess;
 use App\DataProcessors\Claims\ClaimDataProcess2;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Clients\ClientResource;
