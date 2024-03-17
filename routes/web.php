@@ -16,13 +16,12 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/test', function () {
-    return \App\DataProcessors\Claims\ClaimDataProcess2::calculate(\App\Models\Claim::query()->find(52));
+    return \App\DataProcessors\Claims\ClaimDataProcess::calculate(\App\Models\Claim::query()->find(52));
 });
 
 Route::get('/', function () {
     return view('welcome');
 });
-
 
 Route::prefix('print')
     ->group(function () {
@@ -30,4 +29,3 @@ Route::prefix('print')
         Route::get('/print-clients', PrintClientsController::class);
 
     });
-

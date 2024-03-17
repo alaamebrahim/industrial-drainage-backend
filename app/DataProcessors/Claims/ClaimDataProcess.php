@@ -14,13 +14,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
-class ClaimDataProcess2
+class ClaimDataProcess
 {
-
     public static function calculate(Claim $claim): Claim
     {
 
-        Log::info("---------------------------------------------------------------------------------------------------------------------------------------------------");
+        Log::info('---------------------------------------------------------------------------------------------------------------------------------------------------');
         Log::info("Calculation start for claim: $claim->id, start_date is: $claim->start_date, end_date is: $claim->end_date, client name: {$claim->client?->name}");
 
         $results = self::getClientResults($claim->client_id);
@@ -38,7 +37,7 @@ class ClaimDataProcess2
         });
 
         Log::info("Total amount of claim is: $totalAmount");
-        Log::info("---------------------------------------------------------------------------------------------------------------------------------------------------");
+        Log::info('---------------------------------------------------------------------------------------------------------------------------------------------------');
 
         $claim->update(['total_amount' => $totalAmount]);
 
@@ -58,7 +57,7 @@ class ClaimDataProcess2
 
         $valuesToCheck = [1, 2];
 
-        $arrayToSearch = $result->resultDetails->map(fn($resultDetail) => $resultDetail->sample_id)->toArray();
+        $arrayToSearch = $result->resultDetails->map(fn ($resultDetail) => $resultDetail->sample_id)->toArray();
 
         $calculate60PercentageOfCOD = count(array_intersect($valuesToCheck, $arrayToSearch)) === count($valuesToCheck);
 
@@ -67,10 +66,8 @@ class ClaimDataProcess2
         $preparedResultDetails = self::prepareResultDetails($result->id, $claim->client_id, $endDate);
 
         $preparedResultDetails
-            ->each(callback: function (ResultDetailResource $resultDetail)
-            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
+            ->each(callback: function (ResultDetailResource $resultDetail) use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
                 Log::info("**************** Result detail id:  $resultDetail->id start");
-
 
                 $startDate = Carbon::parse($resultDate)->lte(Carbon::parse($startDate)) ? $startDate : $resultDate;
 
@@ -91,7 +88,6 @@ class ClaimDataProcess2
                 );
 
                 Log::info("value for resultDetail $resultDetail->id is: $value");
-
 
                 if ($resultDetail->sample_id == 3 && $calculate60PercentageOfCOD) {
                     Log::info("60% for COD is calculated for resultDetail $resultDetail->id");
@@ -129,7 +125,7 @@ class ClaimDataProcess2
             ->orderBy('sample_id')
             ->get();
 
-        $resultDetails = $resultDetails->map(function ($detail) use ($endDate, $resultDetails, $resultId) {
+        $resultDetails = $resultDetails->map(function ($detail) use ($endDate) {
             $resultDate = $detail->result->result_date;
 
             $nextResultDate = Result::query()
@@ -137,24 +133,21 @@ class ClaimDataProcess2
                 ->whereDate('result_date', '>', $resultDate)
                 ->first()?->result_date;
 
-
             // If there are newer result details, find the date before the newest result_date
             if ($nextResultDate) {
-                $resultEndDate = date('Y-m-d', strtotime("-1 day", strtotime($nextResultDate)));
+                $resultEndDate = date('Y-m-d', strtotime('-1 day', strtotime($nextResultDate)));
             } else {
                 // If there are no newer result details, set result_end_date to the day before the current result_date
-                $resultEndDate = date('Y-m-d', strtotime("-1 day", strtotime($endDate)));
+                $resultEndDate = date('Y-m-d', strtotime('-1 day', strtotime($endDate)));
             }
-
 
             // Set the result_end_date for the current detail
             $detail->result_end_date = $resultEndDate;
 
-            Log::info("Final resultDetails is: " . json_encode($detail));
+            Log::info('Final resultDetails is: '.json_encode($detail));
 
             return $detail;
-        })->filter(fn($resultDetail) => $resultId == null || $resultDetail->result_id == $resultId && Carbon::parse($resultDetail->result?->result_date)->lte($endDate));
-
+        })->filter(fn ($resultDetail) => $resultId == null || $resultDetail->result_id == $resultId && Carbon::parse($resultDetail->result?->result_date)->lte($endDate));
 
         return ResultDetailResource::collection($resultDetails)->collection;
     }
@@ -162,7 +155,6 @@ class ClaimDataProcess2
     public static function calculateClaimDetailItemValue(ResultDetailResource $resultDetail, Claim $claim, string $resultDate, string $startDate, string $endDate): int|float
     {
         [$price, $duration, $firstResultDate] = self::getSampleDetail($resultDetail->sample_detail_id, $claim->client_id);
-
 
         $consumption = $claim->consumption;
 
@@ -174,7 +166,7 @@ class ClaimDataProcess2
             firstResultDate: $firstResultDate
         );
 
-        Log::info("Durations for $resultDetail->id is: " . json_encode($durations) . " startDate is $startDate and endDate is $endDate and time_limit is $duration");
+        Log::info("Durations for $resultDetail->id is: ".json_encode($durations)." startDate is $startDate and endDate is $endDate and time_limit is $duration");
 
         $value = 0;
 
@@ -182,7 +174,6 @@ class ClaimDataProcess2
             ->each(function (int $duration, $index) use (&$value, $price, $consumption) {
 
                 $calculatedValue = $price * $consumption * ($duration / 30);
-
 
                 if ($index == 0) {
                     $value += $calculatedValue;
@@ -204,6 +195,7 @@ class ClaimDataProcess2
 
                 }
             });
+
         return $value;
     }
 
@@ -213,10 +205,10 @@ class ClaimDataProcess2
         $sampleDetail = SampleDetail::query()->find($sampleDetailId);
 
         $firstResultDate = self::getClientResultDetails($clientId)
-            ->filter(fn($item) => $item->sample_id == $sampleDetail->sample_id)
+            ->filter(fn ($item) => $item->sample_id == $sampleDetail->sample_id)
             ->min('result_date');
 
-        return [(float)$sampleDetail->price, (int)$sampleDetail->duration, $firstResultDate];
+        return [(float) $sampleDetail->price, (int) $sampleDetail->duration, $firstResultDate];
     }
 
     public static function calculateArray($resultDate, $startDate, $endDate, $time_limit, $firstResultDate): array
@@ -242,7 +234,7 @@ class ClaimDataProcess2
 
         $result = array_fill(0, $repetitions, $time_limit);
 
-        Log::info("result is: " . json_encode($result));
+        Log::info('result is: '.json_encode($result));
 
         $remaining_duration = ($total_duration + $start_difference) - array_sum($result);
 
@@ -290,13 +282,14 @@ class ClaimDataProcess2
         }
 
         return collect($result)
-            ->map(function ($resultItem, $index) use ($result, &$start_difference) {
+            ->map(function ($resultItem, $index) use (&$start_difference) {
                 if ($start_difference <= 0) {
                     return $resultItem;
                 }
 
                 if ($start_difference >= $resultItem) {
                     $start_difference -= $resultItem;
+
                     return 0;
                 }
 
@@ -324,9 +317,10 @@ class ClaimDataProcess2
         $resultDetails = ResultDetail::query()
             ->whereIn('result_id', self::getClientResults($clientId)->pluck('id'))
             ->get();
+
         return $resultDetails
             ->map(function (ResultDetail $resultDetail) {
-                return (object)[
+                return (object) [
                     'sample_id' => $resultDetail->sample_id,
                     'result_date' => $resultDetail->result->result_date,
                     'value' => $resultDetail->value,

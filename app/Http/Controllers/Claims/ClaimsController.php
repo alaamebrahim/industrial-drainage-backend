@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Claims;
 
-use App\DataProcessors\Claims\ClaimDataProcess2;
+use App\DataProcessors\Claims\ClaimDataProcess;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Claims\StoreClaimRequest;
 use App\Http\Resources\Claims\ClaimResource;
@@ -17,22 +17,23 @@ class ClaimsController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = Claim::query()
-            ->when($request->filled('is_active'), fn($query) => $query->whereHas('client', fn($query) => $query->where('is_active', $request->boolean('is_active'))))
-            ->when($request->filled('end_date_from'), fn($query) => $query->whereDate('end_date', '>=', $request->date('end_date_from')))
-            ->when($request->filled('end_date_to'), fn($query) => $query->whereDate('end_date', '<=', $request->date('end_date_to')))
-            ->when($request->filled('search'), fn($query) => $query->whereHas('client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
+            ->when($request->filled('is_active'), fn ($query) => $query->whereHas('client', fn ($query) => $query->where('is_active', $request->boolean('is_active'))))
+            ->when($request->filled('end_date_from'), fn ($query) => $query->whereDate('end_date', '>=', $request->date('end_date_from')))
+            ->when($request->filled('end_date_to'), fn ($query) => $query->whereDate('end_date', '<=', $request->date('end_date_to')))
+            ->when($request->filled('search'), fn ($query) => $query->whereHas('client', fn ($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
             ->with([
                 'client',
                 'details',
             ])
             ->orderBy('id', 'desc');
+
         return response()->json([
             'success' => true,
             'stats' => [
                 'count' => $data->count(),
                 'total_amount' => number_format($totalAmount = $data->sum('total_amount'), 2),
                 'amount_paid' => number_format($amountPaid = $data->sum('amount_paid'), 2),
-                'net_amount' => number_format($totalAmount - $amountPaid, 2)
+                'net_amount' => number_format($totalAmount - $amountPaid, 2),
             ],
             'data' => ClaimResource::collection($data->paginate(25))->resource,
         ]);
@@ -47,6 +48,7 @@ class ClaimsController extends Controller
             ])
             ->where('id', $id)
             ->first();
+
         return response()->json([
             'success' => true,
             'data' => new ClaimResource($data),
@@ -60,21 +62,22 @@ class ClaimsController extends Controller
 
             $claim = Claim::query()->create($request->validated());
 
-            ClaimDataProcess2::calculate($claim);
+            ClaimDataProcess::calculate($claim);
 
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();
             errorLog($exception);
+
             return response()->json([
                 'success' => false,
-                'message' => 'لم يتم الحفظ'
+                'message' => 'لم يتم الحفظ',
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'تم الحفظ بنجاح'
+            'message' => 'تم الحفظ بنجاح',
         ]);
     }
 
@@ -92,15 +95,16 @@ class ClaimsController extends Controller
         } catch (\Throwable $exception) {
             DB::rollBack();
             errorLog($exception);
+
             return response()->json([
                 'success' => false,
-                'message' => 'لم يتم الحفظ'
+                'message' => 'لم يتم الحفظ',
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'تم الحذف بنجاح'
+            'message' => 'تم الحذف بنجاح',
         ]);
     }
 }
