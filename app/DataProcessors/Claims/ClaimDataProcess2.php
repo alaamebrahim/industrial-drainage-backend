@@ -14,7 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
-class ClaimDataProcess
+class ClaimDataProcess2
 {
 
     public static function calculate(Claim $claim): Claim
@@ -23,10 +23,7 @@ class ClaimDataProcess
         Log::info("---------------------------------------------------------------------------------------------------------------------------------------------------");
         Log::info("Calculation start for claim: $claim->id, start_date is: $claim->start_date, end_date is: $claim->end_date, client name: {$claim->client?->name}");
 
-        $results = Result::query()
-            ->orderBy('result_date')
-            ->where('client_id', $claim->client_id)
-            ->get();
+        $results = self::getClientResults($claim->client_id);
 
         Log::info("Count of results is: {$results->count()}");
 
@@ -68,11 +65,16 @@ class ClaimDataProcess
         $totalAmount = 0;
 
         $preparedResultDetails = self::prepareResultDetails($result->id, $claim->client_id, $endDate);
-dd($preparedResultDetails->pluck('sample_detail_id'));
+
+        // Here we will save previous $previousResultDetailResource for next loop occurrence.
+        $previousResultDetailResource = null;
+
+
         $preparedResultDetails
             ->each(callback: function (ResultDetailResource $resultDetail)
-            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId) {
+            use ($result, &$totalAmount, $resultDate, $startDate, $endDate, $claim, $calculate60PercentageOfCOD, $lastResultId, &$previousResultDetailResource) {
                 Log::info("**************** Result detail id:  $resultDetail->id start");
+
 
                 $startDate = Carbon::parse($resultDate)->lte(Carbon::parse($startDate)) ? $startDate : $resultDate;
 
@@ -85,6 +87,7 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
 
                 Log::info("endDate for resultDetail $resultDetail->id is: $endDate");
 
+                // عايز ابعت هنا لو كان نفس البند موجود في معاينة سابقة
                 $value = self::calculateClaimDetailItemValue(
                     resultDetail: $resultDetail,
                     claim: $claim,
@@ -153,7 +156,7 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
             // Set the result_end_date for the current detail
             $detail->result_end_date = $resultEndDate;
 
-            Log::info("Final resultDetails is: ". json_encode($detail));
+            Log::info("Final resultDetails is: " . json_encode($detail));
 
             return $detail;
         })->filter(fn($resultDetail) => $resultId == null || $resultDetail->result_id == $resultId && Carbon::parse($resultDetail->result?->result_date)->lte($endDate));
@@ -164,7 +167,8 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
 
     public static function calculateClaimDetailItemValue(ResultDetailResource $resultDetail, Claim $claim, string $resultDate, string $startDate, string $endDate): int|float
     {
-        [$price, $duration] = self::getSampleDetail($resultDetail->sample_detail_id);
+        [$price, $duration, $firstResultDate] = self::getSampleDetail($resultDetail->sample_detail_id, $claim->client_id);
+
 
         $consumption = $claim->consumption;
 
@@ -172,7 +176,8 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
             resultDate: $resultDate,
             startDate: $startDate,
             endDate: $endDate,
-            time_limit: $duration
+            time_limit: $duration,
+            firstResultDate: $firstResultDate
         );
 
         Log::info("Durations for $resultDetail->id is: " . json_encode($durations) . " startDate is $startDate and endDate is $endDate and time_limit is $duration");
@@ -208,28 +213,33 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
         return $value;
     }
 
-    protected static function getSampleDetail(int $sampleDetailId): array
+    protected static function getSampleDetail(int $sampleDetailId, int $clientId): array
     {
+
         $sampleDetail = SampleDetail::query()->find($sampleDetailId);
-        return [(float)$sampleDetail->price, (int)$sampleDetail->duration];
+
+        $firstResultDate = self::getClientResultDetails($clientId)
+            ->filter(fn($item) => $item->sample_id == $sampleDetail->sample_id)
+            ->min('result_date');
+
+        return [(float)$sampleDetail->price, (int)$sampleDetail->duration, $firstResultDate];
     }
 
-    public static function calculateArray($resultDate, $startDate, $endDate, $time_limit): array
+    public static function calculateArray($resultDate, $startDate, $endDate, $time_limit, $firstResultDate): array
     {
         $start_difference = Carbon::parse($resultDate)->startOfDay()->diffInDays(Carbon::parse($startDate)->endOfDay());
 
-        Log::info("time_limit is: $time_limit");
+        $diffBetweenFirstResultDateAndStartDate = Carbon::parse($startDate)->startOfDay()->diffInDays(Carbon::parse($firstResultDate)->endOfDay());
 
+        Log::info("time_limit is: $time_limit");
         Log::info("start_difference is: $start_difference");
 
-        $total_duration = Carbon::parse($startDate)->startOfDay()->diffInDays(Carbon::parse($endDate)->endOfDay());
+        $total_duration = Carbon::parse($startDate)->startOfDay()->diffInDays(Carbon::parse($endDate)->endOfDay()) + $diffBetweenFirstResultDateAndStartDate;
 
-        Log::info("total_duration is: $total_duration");
+        Log::info("total_duration is: $total_duration, note that diffBetweenFirstResultDateAndStartDate is: $diffBetweenFirstResultDateAndStartDate");
 
         if ($time_limit == 0) {
-            return [
-                $total_duration
-            ];
+            return [$total_duration - $diffBetweenFirstResultDateAndStartDate];
         }
 
         $repetitions = floor(($total_duration + $start_difference) / $time_limit);
@@ -252,12 +262,33 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
 
         if (count($result) > 3) {
             $sum_values = array_sum(array_slice($result, 2));
-
             $result = [
                 $result[0],
                 $result[1],
                 $sum_values,
             ];
+        }
+
+        // Adjusting the first element of $result based on $diffBetweenFirstResultDateAndStartDate
+        if ($diffBetweenFirstResultDateAndStartDate > 0) {
+            if ($diffBetweenFirstResultDateAndStartDate <= $result[0]) {
+                $result[0] -= $diffBetweenFirstResultDateAndStartDate;
+            } else {
+                $diff = $diffBetweenFirstResultDateAndStartDate - $result[0];
+                $result[0] = 0;
+                // Adjust subsequent elements
+                foreach ($result as $key => $value) {
+                    if ($key !== 0) {
+                        if ($value >= $diff) {
+                            $result[$key] -= $diff;
+                            break;
+                        } else {
+                            $diff -= $value;
+                            $result[$key] = 0;
+                        }
+                    }
+                }
+            }
         }
 
         if ($start_difference == 0) {
@@ -275,18 +306,37 @@ dd($preparedResultDetails->pluck('sample_detail_id'));
                     return 0;
                 }
 
-
                 $finalResultItem = $resultItem - $start_difference;
-
                 $start_difference -= $resultItem;
-
 
                 if ($start_difference < 0) {
                     $start_difference = 0;
                 }
 
                 return $finalResultItem;
-
             })->toArray();
+    }
+
+    public static function getClientResults(int $clientId): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return Result::query()
+            ->orderBy('result_date')
+            ->where('client_id', $clientId)
+            ->get();
+    }
+
+    public static function getClientResultDetails(int $clientId)
+    {
+        $resultDetails = ResultDetail::query()
+            ->whereIn('result_id', self::getClientResults($clientId)->pluck('id'))
+            ->get();
+        return $resultDetails
+            ->map(function (ResultDetail $resultDetail) {
+                return (object)[
+                    'sample_id' => $resultDetail->sample_id,
+                    'result_date' => $resultDetail->result->result_date,
+                    'value' => $resultDetail->value,
+                ];
+            });
     }
 }

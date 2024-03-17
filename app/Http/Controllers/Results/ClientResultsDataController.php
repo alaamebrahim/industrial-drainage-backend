@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Results;
 
 use App\DataProcessors\Claims\ClaimDataProcess;
+use App\DataProcessors\Claims\ClaimDataProcess2;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Clients\ClientResource;
 use App\Http\Resources\Results\ResultDetailResource;
@@ -18,7 +19,7 @@ class ClientResultsDataController extends Controller
             ->where('id', $id)
             ->first();
 
-        $resultDetails = ClaimDataProcess::prepareResultDetails(
+        $resultDetails = ClaimDataProcess2::prepareResultDetails(
             resultId: null,
             clientId: $id,
             endDate: now()->format('Y-m-d')

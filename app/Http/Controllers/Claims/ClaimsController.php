@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Claims;
 
 use App\DataProcessors\Claims\ClaimDataProcess;
+use App\DataProcessors\Claims\ClaimDataProcess2;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Claims\StoreClaimRequest;
 use App\Http\Resources\Claims\ClaimResource;
@@ -60,7 +61,7 @@ class ClaimsController extends Controller
 
             $claim = Claim::query()->create($request->validated());
 
-            ClaimDataProcess::calculate($claim);
+            ClaimDataProcess2::calculate($claim);
 
             DB::commit();
         } catch (\Throwable $exception) {

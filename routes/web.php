@@ -16,6 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+Route::get('/test', function () {
+    return \App\DataProcessors\Claims\ClaimDataProcess2::calculate(\App\Models\Claim::query()->find(52));
+});
+
 Route::get('/', function () {
     return view('welcome');
 });
