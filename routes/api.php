@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RefreshAccessTokenController;
 use App\Http\Controllers\Claims\ClaimDetailsController;
 use App\Http\Controllers\Claims\ClaimsController;
+use App\Http\Controllers\Claims\ReCalculateClaimController;
 use App\Http\Controllers\Clients\ClientDetailsController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\DashboardStatsController;
@@ -19,7 +20,6 @@ use App\Http\Controllers\Results\ResultsController;
 use App\Http\Controllers\Samples\SampleDetailsController;
 use App\Http\Controllers\Samples\SamplesController;
 use Illuminate\Support\Facades\Route;
-
 
 Route::post('auth/login', LoginController::class);
 Route::post('auth/logout', LogoutController::class);
@@ -55,26 +55,26 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Claims
     Route::resource('claims', ClaimsController::class)->only(['index', 'show', 'store', 'destroy']);
+    Route::post('re-calculate-claim', ReCalculateClaimController::class);
     Route::post('claim-details/{id}', ClaimDetailsController::class);
 
     // Payments
     Route::resource('payments', PaymentsController::class)->only(['index', 'show', 'store', 'destroy']);
 
     // API
-//    Route::group(['prefix' => 'list'], function () {
-//    });
+    //    Route::group(['prefix' => 'list'], function () {
+    //    });
 
     // Users
     Route::resource('users', UsersController::class);
     Route::get('user-permissions', UserPermissionsController::class);
 
-
     // Reports
-//    Route::group(['prefix' => 'reports'], function () {
-//    });
+    //    Route::group(['prefix' => 'reports'], function () {
+    //    });
 
     // Letters
-//    Route::group(['prefix' => 'letters'], function () {
-//        Route::post('debts', DebtsLetterController::class);
-//    });
+    //    Route::group(['prefix' => 'letters'], function () {
+    //        Route::post('debts', DebtsLetterController::class);
+    //    });
 });
