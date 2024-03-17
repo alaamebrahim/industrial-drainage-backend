@@ -8,6 +8,7 @@ use App\Http\Requests\Claims\StoreClaimRequest;
 use App\Http\Resources\Claims\ClaimResource;
 use App\Models\Claim;
 use App\Models\ClaimDetail;
+use App\Models\Payment;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,6 +25,7 @@ class ClaimsController extends Controller
             ->with([
                 'client',
                 'details',
+                'payments',
             ])
             ->orderBy('id', 'desc');
 
@@ -32,7 +34,7 @@ class ClaimsController extends Controller
             'stats' => [
                 'count' => $data->count(),
                 'total_amount' => number_format($totalAmount = $data->sum('total_amount'), 2),
-                'amount_paid' => number_format($amountPaid = $data->sum('amount_paid'), 2),
+                'amount_paid' => number_format($amountPaid = Payment::query()->whereIn('claim_id', $data->pluck('id')->toArray())->sum('amount'), 2),
                 'net_amount' => number_format($totalAmount - $amountPaid, 2),
             ],
             'data' => ClaimResource::collection($data->paginate(25))->resource,

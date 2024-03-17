@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\SampleResults\StoreResultRequest;
 use App\Http\Requests\SampleResults\UpdateResultRequest;
 use App\Http\Resources\Results\ResultResource;
-use App\Models\Claim;
 use App\Models\Result;
 use App\Models\ResultDetail;
 use Illuminate\Http\JsonResponse;
@@ -18,10 +17,10 @@ class ResultsController extends Controller
     public function index(Request $request): JsonResponse
     {
         $data = Result::query()
-            ->when($request->filled('is_active'), fn($query) => $query->whereHas('client', fn($query) => $query->where('is_active', $request->boolean('is_active'))))
-            ->when($request->filled('result_date_from'), fn($query) => $query->whereDate('result_date', '>=', $request->date('result_date_from')))
-            ->when($request->filled('result_date_to'), fn($query) => $query->whereDate('result_date', '<=', $request->date('result_date_to')))
-            ->when($request->filled('search'), fn($query) => $query->whereHas('client', fn($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
+            ->when($request->filled('is_active'), fn ($query) => $query->whereHas('client', fn ($query) => $query->where('is_active', $request->boolean('is_active'))))
+            ->when($request->filled('result_date_from'), fn ($query) => $query->whereDate('result_date', '>=', $request->date('result_date_from')))
+            ->when($request->filled('result_date_to'), fn ($query) => $query->whereDate('result_date', '<=', $request->date('result_date_to')))
+            ->when($request->filled('search'), fn ($query) => $query->whereHas('client', fn ($query) => $query->whereLike(['name', 'address'], $request->string('search'))))
             ->with([
                 'client',
                 'resultDetails.sample',
@@ -30,6 +29,7 @@ class ResultsController extends Controller
             ])
             ->orderBy('id', 'desc')
             ->paginate(25);
+
         return response()->json([
             'success' => true,
             'data' => ResultResource::collection($data)->resource,
@@ -47,6 +47,7 @@ class ResultsController extends Controller
                 'resultDetails.sampleDetail',
             ])
             ->first();
+
         return response()->json([
             'success' => true,
             'data' => new ResultResource($data),
@@ -69,6 +70,7 @@ class ResultsController extends Controller
                             'result_id' => $sampleResult->id,
                             'sample_id' => $item['sample_id'],
                             'sample_detail_id' => $item['sample_detail_id'],
+                            'adjustment_date' => $item['adjustment_date'] ?? null,
                             'value' => $item['value'],
                         ]);
                 });
@@ -77,15 +79,16 @@ class ResultsController extends Controller
         } catch (\Throwable $exception) {
             DB::rollBack();
             errorLog($exception);
+
             return response()->json([
                 'success' => false,
-                'message' => 'لم يتم الحفظ'
+                'message' => 'لم يتم الحفظ',
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'تم الحفظ بنجاح'
+            'message' => 'تم الحفظ بنجاح',
         ]);
     }
 
@@ -107,24 +110,25 @@ class ResultsController extends Controller
                             'result_id' => $id,
                             'sample_id' => $item['sample_id'],
                             'sample_detail_id' => $item['sample_detail_id'],
+                            'adjustment_date' => $item['adjustment_date'],
                             'value' => $item['value'],
                         ]);
                 });
-
 
             DB::commit();
         } catch (\Throwable $exception) {
             DB::rollBack();
             errorLog($exception);
+
             return response()->json([
                 'success' => false,
-                'message' => 'لم يتم الحفظ'
+                'message' => 'لم يتم الحفظ',
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'تم الحفظ بنجاح'
+            'message' => 'تم الحفظ بنجاح',
         ]);
     }
 
@@ -141,15 +145,16 @@ class ResultsController extends Controller
         } catch (\Throwable $exception) {
             DB::rollBack();
             errorLog($exception);
+
             return response()->json([
                 'success' => false,
-                'message' => 'لم يتم الحفظ'
+                'message' => 'لم يتم الحفظ',
             ]);
         }
 
         return response()->json([
             'success' => true,
-            'message' => 'تم الحذف بنجاح'
+            'message' => 'تم الحذف بنجاح',
         ]);
     }
 }

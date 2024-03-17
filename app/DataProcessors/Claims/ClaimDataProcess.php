@@ -31,7 +31,12 @@ class ClaimDataProcess
         $results->each(function (Result $result, $index) use ($results, $claim, &$totalAmount) {
             Log::info("**************** Result index:  $index start");
 
-            $totalAmount += self::calculateSingleResult($result, $claim, $results->max('id'));
+            $totalAmount += self::calculateSingleResult(
+                result: $result,
+                claim: $claim,
+                lastResultId: $results->where('result_date', $results->max('result_date'))->max('id'),
+                firstResultId: $results->where('result_date', $results->min('result_date'))->max('id'),
+            );
 
             Log::info("**************** Result index:  $index end");
         });
@@ -45,7 +50,15 @@ class ClaimDataProcess
 
     }
 
-    public static function calculateSingleResult(Result $result, Claim $claim, int $lastResultId): float
+    public static function getClientResults(int $clientId): \Illuminate\Database\Eloquent\Collection|array
+    {
+        return Result::query()
+            ->orderBy('result_date')
+            ->where('client_id', $clientId)
+            ->get();
+    }
+
+    public static function calculateSingleResult(Result $result, Claim $claim, int $lastResultId, int $firstResultId): float
     {
         $result->load(['resultDetails']);
 
@@ -71,7 +84,9 @@ class ClaimDataProcess
 
                 $startDate = Carbon::parse($resultDate)->lte(Carbon::parse($startDate)) ? $startDate : $resultDate;
 
-                if ($lastResultId == $result->id) {
+                if ($resultDetail->adjustment_date != null) {
+                    $endDate = $resultDetail->adjustment_date;
+                } elseif ($lastResultId == $result->id) {
                     $endDate = $claim->end_date;
                 } else {
                     $endDate = Carbon::parse($resultDetail->result_end_date)->lte(Carbon::parse($endDate)) ? $resultDetail->result_end_date : $endDate;
@@ -95,14 +110,18 @@ class ClaimDataProcess
                     $value = $value * 0.6;
                 }
 
-                ClaimDetail::query()->create([
-                    'claim_id' => $claim->id,
-                    'key' => Sample::query()->find($resultDetail->sample_id)?->name,
-                    'value' => $value,
-                    'result_detail_id' => $resultDetail->id,
-                    'start_date' => $startDate,
-                    'end_date' => $endDate,
-                ]);
+                if ($value > 0) {
+                    ClaimDetail::query()->create([
+                        'claim_id' => $claim->id,
+                        'key' => Sample::query()->find($resultDetail->sample_id)?->name,
+                        'value' => $value,
+                        'old_value' => $value,
+                        'result_detail_id' => $resultDetail->id,
+                        'start_date' => $startDate,
+                        'end_date' => $endDate,
+                        'adjustment_date' => $resultDetail->adjustment_date,
+                    ]);
+                }
 
                 $totalAmount += $value;
                 Log::info("**************** Result detail id:  $resultDetail->id end");
@@ -133,8 +152,11 @@ class ClaimDataProcess
                 ->whereDate('result_date', '>', $resultDate)
                 ->first()?->result_date;
 
+            if ($detail->adjustment_date) {
+                $resultEndDate = date('Y-m-d', strtotime($detail->adjustment_date));
+            }
             // If there are newer result details, find the date before the newest result_date
-            if ($nextResultDate) {
+            elseif ($nextResultDate) {
                 $resultEndDate = date('Y-m-d', strtotime('-1 day', strtotime($nextResultDate)));
             } else {
                 // If there are no newer result details, set result_end_date to the day before the current result_date
@@ -169,6 +191,12 @@ class ClaimDataProcess
         Log::info("Durations for $resultDetail->id is: ".json_encode($durations)." startDate is $startDate and endDate is $endDate and time_limit is $duration");
 
         $value = 0;
+
+        if (Carbon::parse($endDate)->lte($startDate)) {
+            Log::info("Adjustment date $endDate is older than startDate  $startDate so we will return 0 for $resultDetail->id");
+
+            return $value;
+        }
 
         collect($durations)
             ->each(function (int $duration, $index) use (&$value, $price, $consumption) {
@@ -209,6 +237,22 @@ class ClaimDataProcess
             ->min('result_date');
 
         return [(float) $sampleDetail->price, (int) $sampleDetail->duration, $firstResultDate];
+    }
+
+    public static function getClientResultDetails(int $clientId)
+    {
+        $resultDetails = ResultDetail::query()
+            ->whereIn('result_id', self::getClientResults($clientId)->pluck('id'))
+            ->get();
+
+        return $resultDetails
+            ->map(function (ResultDetail $resultDetail) {
+                return (object) [
+                    'sample_id' => $resultDetail->sample_id,
+                    'result_date' => $resultDetail->result->result_date,
+                    'value' => $resultDetail->value,
+                ];
+            });
     }
 
     public static function calculateArray($resultDate, $startDate, $endDate, $time_limit, $firstResultDate): array
@@ -277,6 +321,8 @@ class ClaimDataProcess
             }
         }
 
+        Log::info('Final result is: '.json_encode($result));
+
         if ($start_difference == 0) {
             return $result;
         }
@@ -302,29 +348,5 @@ class ClaimDataProcess
 
                 return $finalResultItem;
             })->toArray();
-    }
-
-    public static function getClientResults(int $clientId): \Illuminate\Database\Eloquent\Collection|array
-    {
-        return Result::query()
-            ->orderBy('result_date')
-            ->where('client_id', $clientId)
-            ->get();
-    }
-
-    public static function getClientResultDetails(int $clientId)
-    {
-        $resultDetails = ResultDetail::query()
-            ->whereIn('result_id', self::getClientResults($clientId)->pluck('id'))
-            ->get();
-
-        return $resultDetails
-            ->map(function (ResultDetail $resultDetail) {
-                return (object) [
-                    'sample_id' => $resultDetail->sample_id,
-                    'result_date' => $resultDetail->result->result_date,
-                    'value' => $resultDetail->value,
-                ];
-            });
     }
 }

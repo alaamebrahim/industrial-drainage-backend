@@ -20,6 +20,7 @@ class ClaimDetailResource extends JsonResource
             'value' => $this->value,
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
+            'adjustment_date' => $this->adjustment_date,
             'result_detail_value' => $this->resultDetail?->value,
             'sample_detail' => new SampleDetailResource($this->resultDetail?->sampleDetail),
         ];
