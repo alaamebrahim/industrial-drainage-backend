@@ -115,7 +115,6 @@ class ClaimDataProcess
                         'claim_id' => $claim->id,
                         'key' => Sample::query()->find($resultDetail->sample_id)?->name,
                         'value' => $value,
-                        'old_value' => $value,
                         'result_detail_id' => $resultDetail->id,
                         'start_date' => $startDate,
                         'end_date' => $endDate,
