@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RefreshAccessTokenController;
 use App\Http\Controllers\Claims\ClaimDetailsController;
 use App\Http\Controllers\Claims\ClaimsController;
 use App\Http\Controllers\Claims\ReCalculateClaimController;
+use App\Http\Controllers\Claims\UpdateClaimAdjustmentDatesController;
 use App\Http\Controllers\Clients\ClientDetailsController;
 use App\Http\Controllers\Clients\ClientsController;
 use App\Http\Controllers\DashboardStatsController;
@@ -56,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Claims
     Route::resource('claims', ClaimsController::class)->only(['index', 'show', 'store', 'destroy']);
     Route::post('re-calculate-claim', ReCalculateClaimController::class);
+    Route::post('update-claim-adjustment-dates', UpdateClaimAdjustmentDatesController::class);
     Route::post('claim-details/{id}', ClaimDetailsController::class);
 
     // Payments
