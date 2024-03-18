@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Claims\UpdateClaimAdjustmentDatesRequest;
 use App\Models\Claim;
 use App\Models\ClaimDetail;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +26,7 @@ class UpdateClaimAdjustmentDatesController extends Controller
                 ->each(function ($data) {
 
                     $data = UpdateClaimAdjustmentDateData::from([
-                        'adjustment_date' => $data['adjustment_date'],
+                        'adjustment_date' => ($data['adjustment_date'] == '' || !isset($data['adjustment_date'])) ? null : $data['adjustment_date'],
                         'claim_detail_id' => $data['claim_detail_id'],
                         'claim_id' => $data['claim_id'],
                     ]);

@@ -141,9 +141,9 @@
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($data->details as $item)
+                @foreach($details as $item)
                     <tr>
-                        <td>تكلفة إزالة <b>{{ $item->key }}</b></td>
+                        <td>تكلفة إزالة <b>{{ $item->name }}</b></td>
                         <td style="text-align: right; padding-right: 10px">{{number_format($item->value, 2)}}</td>
                     </tr>
                 @endforeach
