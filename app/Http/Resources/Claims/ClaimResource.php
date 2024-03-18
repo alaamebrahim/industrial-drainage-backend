@@ -21,8 +21,8 @@ class ClaimResource extends JsonResource
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'claim_consumption' => $this->consumption,
-            'total_amount' => $this->total_amount,
-            'amount_paid' => $this->payments()->sum('amount'),
+            'total_amount' => number_format($this->total_amount, 2),
+            'amount_paid' => number_format($this->payments()->sum('amount'), 2),
             'details' => ClaimDetailResource::collection($this->details)
         ];
     }
