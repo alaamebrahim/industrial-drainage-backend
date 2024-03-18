@@ -6,11 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Claim;
 use App\Models\Result;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Fluent;
 use Illuminate\View\View;
 
-class
-PrintClaimController extends Controller
+class PrintClaimController extends Controller
 {
     public function __invoke(int $claimId): View
     {
@@ -22,7 +20,7 @@ PrintClaimController extends Controller
         $claim->details->groupBy('key')->each(function ($item, $name) use (&$details) {
             $details[] = (object) [
                 'name' => $name,
-                'value' => $item->sum('value')
+                'value' => $item->sum('value'),
             ];
         });
 
@@ -34,10 +32,9 @@ PrintClaimController extends Controller
                     $builder->whereIn('result_details.id', $claim->details()?->pluck('result_detail_id'));
                 })
                 ->orderBy('id', 'asc')
-                ->get()
-            ,
+                ->get(),
             'client' => $claim->client,
-            'details' =>  $details
+            'details' => $details,
         ]);
     }
 }

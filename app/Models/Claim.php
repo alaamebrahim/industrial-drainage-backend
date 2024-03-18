@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- *
- *
  * @property int $id
  * @property int $client_id
  * @property string $result_date
@@ -23,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Client $client
  * @property-read \App\Models\Result $result
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|Claim newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Claim newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Claim query()
@@ -38,8 +37,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @method static \Illuminate\Database\Eloquent\Builder|Claim whereStartDate($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Claim whereTotalAmount($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Claim whereUpdatedAt($value)
+ *
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ClaimDetail> $details
  * @property-read int|null $details_count
+ * @property int $is_cancelled
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ *
+ * @method static \Illuminate\Database\Eloquent\Builder|Claim whereIsCancelled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Claim active()
+ *
  * @mixin \Eloquent
  */
 class Claim extends Model
@@ -47,8 +54,13 @@ class Claim extends Model
     use HasFactory;
 
     protected $casts = [
-        'total_amount' => 'float'
+        'total_amount' => 'float',
     ];
+
+    public function scopeActive($query)
+    {
+        return $query->where('is_cancelled', false);
+    }
 
     public function client(): BelongsTo
     {

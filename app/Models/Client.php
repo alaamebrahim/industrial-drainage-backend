@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 /**
- *
- *
  * @property int $id
  * @property string $client_key
  * @property string $name
@@ -19,6 +17,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @property bool $is_active
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
+ *
  * @method static \Database\Factories\ClientFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder|Client newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Client newQuery()
@@ -33,6 +32,14 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereName($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Client whereConsumption($value)
+ *
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Claim> $claims
+ * @property-read int|null $claims_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Payment> $payments
+ * @property-read int|null $payments_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Result> $results
+ * @property-read int|null $results_count
+ *
  * @mixin \Eloquent
  */
 class Client extends Model
@@ -41,7 +48,7 @@ class Client extends Model
 
     public function claims(): HasMany
     {
-        return $this->hasMany(Claim::class);
+        return $this->hasMany(Claim::class)->active();
     }
 
     public function results(): HasMany

@@ -29,12 +29,14 @@ class ClaimsController extends Controller
             ])
             ->orderBy('id', 'desc');
 
+        $statsQuery = clone $data;
+
         return response()->json([
             'success' => true,
             'stats' => [
-                'count' => $data->count(),
-                'total_amount' => number_format($totalAmount = $data->sum('total_amount'), 2),
-                'amount_paid' => number_format($amountPaid = Payment::query()->whereIn('claim_id', $data->pluck('id')->toArray())->sum('amount'), 2),
+                'count' => $statsQuery->active()->count(),
+                'total_amount' => number_format($totalAmount = $statsQuery->active()->sum('total_amount'), 2),
+                'amount_paid' => number_format($amountPaid = Payment::query()->whereIn('claim_id', $statsQuery->active()->pluck('id')->toArray())->sum('amount'), 2),
                 'net_amount' => number_format($totalAmount - $amountPaid, 2),
             ],
             'data' => ClaimResource::collection($data->paginate(25))->resource,

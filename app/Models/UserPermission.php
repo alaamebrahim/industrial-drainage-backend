@@ -11,12 +11,14 @@ use Illuminate\Database\Eloquent\Model;
  * @property int $id
  * @property int $user_id
  * @property int $permission_id
+ *
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission query()
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission wherePermissionId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserPermission whereUserId($value)
+ *
  * @mixin \Eloquent
  */
 class UserPermission extends Model
