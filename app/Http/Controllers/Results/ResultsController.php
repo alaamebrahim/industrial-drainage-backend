@@ -8,6 +8,7 @@ use App\Http\Requests\SampleResults\UpdateResultRequest;
 use App\Http\Resources\Results\ResultResource;
 use App\Models\Result;
 use App\Models\ResultDetail;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -70,7 +71,7 @@ class ResultsController extends Controller
                             'result_id' => $sampleResult->id,
                             'sample_id' => $item['sample_id'],
                             'sample_detail_id' => $item['sample_detail_id'],
-                            'adjustment_date' => $item['adjustment_date'] ?? null,
+                            'adjustment_date' => isset($item['adjustment_date']) ? Carbon::parse($item['adjustment_date'])->format('Y-m-d') : null,
                             'value' => $item['value'],
                         ]);
                 });
@@ -110,7 +111,7 @@ class ResultsController extends Controller
                             'result_id' => $id,
                             'sample_id' => $item['sample_id'],
                             'sample_detail_id' => $item['sample_detail_id'],
-                            'adjustment_date' => $item['adjustment_date'],
+                            'adjustment_date' => isset($item['adjustment_date']) ? Carbon::parse($item['adjustment_date'])->format('Y-m-d') : null,
                             'value' => $item['value'],
                         ]);
                 });
