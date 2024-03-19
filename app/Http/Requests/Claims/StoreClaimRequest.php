@@ -25,7 +25,7 @@ class StoreClaimRequest extends JsonFormRequest
 
     public function withValidator(Validator $validator)
     {
-        $validator->after(function (Validator $validator){
+        $validator->after(function (Validator $validator) {
             $startDateExists = Claim::query()
                 ->where('client_id', $this->get('client_id'))
                 ->whereBetween('start_date', [$this->get('start_date'), $this->get('start_date')])
