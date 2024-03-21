@@ -33,14 +33,15 @@ class Handler extends ExceptionHandler
     {
         $response = parent::render($request, $e);
 
-        if (!$request->expectsJson()) {
+        if (! $request->expectsJson()) {
             return parent::render($request, $e);
         }
+
         return response()->json([
             'success' => false,
             'message' => $this->getResponseString($response),
-            'realError' => $response->getContent()
-        ], $response->status());
+            'realError' => $response->getContent(),
+        ], $response->getStatusCode());
 
     }
 

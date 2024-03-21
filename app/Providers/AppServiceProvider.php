@@ -17,7 +17,6 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         //
-        $this->whereLikeMacro();
     }
 
     /**
@@ -28,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
         Model::unguard();
         Model::$snakeAttributes = true;
         Model::preventAccessingMissingAttributes(true);
-//        Model::preventLazyLoading(true);
+        //        Model::preventLazyLoading(true);
 
         Model::created(function () {
             Cache::forget('dashboard_stats');
@@ -44,7 +43,6 @@ class AppServiceProvider extends ServiceProvider
             Cache::forget('dashboard_stats');
             Cache::forget('accounts_list');
         });
-
     }
 
     protected function whereLikeMacro()
@@ -77,5 +75,4 @@ class AppServiceProvider extends ServiceProvider
             return $this;
         });
     }
-
 }
